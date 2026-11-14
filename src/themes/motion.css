@@ -69,6 +69,24 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-draw {
   animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
 }
 
+/* ── a gauge fills to its number, once ──
+   The bar is drawn at its final width and the animation scales it from nothing, so a still page shows the value without a length
+   written into a keyframe. transform-origin comes from figure.css, left or right, so the fill grows from the axis on either side. */
+@keyframes am-fx-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-fill {
+  animation: am-fx-grow calc(0.9s * var(--am-fx-phase, 1)) cubic-bezier(0.3, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
+/* ── a matrix arrives along its diagonal: the delay per cell is (row + column) × 60 ms, which reads as top left first ── */
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-cell {
+  animation: am-fx-in calc(0.45s * var(--am-fx-phase, 1)) linear both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
 /* ── a ring or a sweep that turns about a point the template wrote in drawing units ── */
 @keyframes am-fx-spin {
   to { transform: rotate(360deg); }
@@ -102,6 +120,8 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-chart {
   .am-fx .am-fx-flash,
   .am-fx .am-fx-draw,
   .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
   .am-chart { animation: none !important; }
 }
 
@@ -115,6 +135,8 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-chart {
   .am-fx .am-fx-flash,
   .am-fx .am-fx-draw,
   .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
   .am-chart { animation: none !important; }
 }
 
@@ -127,4 +149,6 @@ html[data-video] .am-fx .am-fx-pulse,
 html[data-video] .am-fx .am-fx-flash,
 html[data-video] .am-fx .am-fx-draw,
 html[data-video] .am-fx .am-fx-spin,
+html[data-video] .am-fx .am-fx-fill,
+html[data-video] .am-fx .am-fx-cell,
 html[data-video] .am-chart { animation: none !important; }

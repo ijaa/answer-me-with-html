@@ -235,14 +235,15 @@ state: pushed.json | sites.csv
 ```
 ````
 
-- 第一个词是模板：`dataflow`（来源汇入中心，几条泳道上的阶段，再汇到出口）、`orbit`（两圈环上的卫星围绕中心）、`radar`（最多 3 条序列、3 到 8 个轴）、`stack`（2 到 5 层，每层若干小块）。
-- 每行是 `角色: 字段`，字段之间用 `|` 隔开。`dataflow` 读 `source:`（一行一个名字）、`lane:`（名字，然后是它的阶段）和 `state:`（跑完留下的文件）；`orbit` 读 `ring1:` 和 `ring2:`；`radar` 读 `series:`（名字，然后是每个轴一个 0–100 的数）；`stack` 读 `layer:`（名字，然后是它的块）。
-- 设置写在围栏里、模板后面，形如 `key="value"`。`dataflow` 必须有 `hub=` 和 `sink=`，`orbit` 必须有 `center=`，`radar` 必须有 `axes="a, b, c"`。`hub-note=`、`center-note=`、`note=` 补一行小字，`stack` 的 `note=` 是图下面的一行注。
+- 第一个词是模板：`dataflow`（来源汇入中心，几条泳道上的阶段，再汇到出口）、`orbit`（两圈环上的卫星围绕中心）、`radar`（最多 3 条序列、3 到 8 个轴）、`stack`（2 到 5 层，每层若干小块）、`gauge`（最多 4 个数对着刻度，带 ok / warn / bad 分区）、`matrix`（最多 10 行 × 6 列的数）、`sankey`（宽度就是数量的流）、`quadrant`（最多 10 个选项放在两个轴上）。
+- 模板词可以省掉：没有两个模板读同一个角色，所以角色本身就把模板命名了（写 `source:` 的 `figure` 是 dataflow，写 `flow:` 的是 sankey）。写 `figure auto` 等于把这件事说出来。一个正文里出现两族角色是报错，两个名字都会点出来。
+- 每行是 `角色: 字段`，字段之间用 `|` 隔开。`dataflow` 读 `source:`（一行一个名字）、`lane:`（名字，然后是它的阶段）和 `state:`（跑完留下的文件）；`orbit` 读 `ring1:` 和 `ring2:`；`radar` 读 `series:`（名字，然后是每个轴一个 0–100 的数）；`stack` 读 `layer:`（名字，然后是它的块）；`gauge` 读 `gauge:`（名字、值、刻度上限）；`matrix` 读 `col:`（一行一个列名）与 `row:`（名字，然后是每列一个 0–100 的数）；`sankey` 读 `flow:`（源、汇、数量）；`quadrant` 读 `item:`（名字，然后是 x、y，都是 0–100）。
+- 设置写在围栏里、模板后面，形如 `key="value"`。`dataflow` 必须有 `hub=` 和 `sink=`，`orbit` 必须有 `center=`，`radar` 必须有 `axes="a, b, c"`，`quadrant` 必须有 `x="低 → 高"` 与 `y="低 → 高"`；`gauge` 用 `unit=` 与 `zones="80, 150"`，`sankey` 用 `unit=`。`hub-note=`、`center-note=`、`note=` 补一行小字，`stack` 的 `note=` 是图下面的一行注。
 - 图自己会动，不用多写一个字：光沿每条边跑，到达的节点长出一圈脉冲，页面打开时边自己画出来。快慢由页面的 `motion:` 决定：`subtle`、`expressive` 或 `off`。
 - `motion: off` 去掉的是动，不是图。静止的页面就是打印出来的页面：存成 PDF、打印、以及系统要求减少动态效果时，看到的是同一张完整的图。没有图也没有图表的页面不会带上这两份样式。
-- 上限：`dataflow` 8 个来源、4 条泳道、6 个文件；`orbit` 内圈 4 个、外圈 6 个卫星；`radar` 3 条序列、8 个轴；`stack` 5 层、每层 6 个块。超过的行会被丢掉，并给出一条说明这些行的提醒。
+- 上限：`dataflow` 8 个来源、4 条泳道、6 个文件；`orbit` 内圈 4 个、外圈 6 个卫星；`radar` 3 条序列、8 个轴；`stack` 5 层、每层 6 个块；`gauge` 4 个数；`matrix` 10 行、6 列；`sankey` 10 条流、4 列；`quadrant` 10 个选项。超过的行会被丢掉，并给出一条说明这些行的提醒。
 - 从右往左的页面会镜像整张图，文字始终留在对应节点的下方。
-- 模板不认识的 `角色:`、没有阶段的泳道、超过 100 的值、以及缺少 `hub=`、`sink=`、`center=` 或 `axes=`，都是带行号的错误。
+- 模板不认识的 `角色:`、没有阶段的泳道、超过 100 的值、某一行的值个数不对、sankey 里绕回来的流、以及缺少 `hub=`、`sink=`、`center=`、`axes=`、`x=` 或 `y=`，都是带行号的错误。
 
 完整写法：`am help figure`。
 

@@ -29,6 +29,7 @@ const STAGE_SIZE = 11.5;
 export default {
   name: 'dataflow',
   summary: 'Sources into a hub, out along lanes, into one aggregate',
+  roles: ['source', 'lane', 'state'],
 
   render(text, { args = {}, uid = 'fx', dir = 'ltr', warn } = {}) {
     const rows = readRows(text, ['source', 'lane', 'state'], 'dataflow');

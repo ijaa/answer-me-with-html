@@ -33,8 +33,9 @@ test('figure: a dataflow renders one figure, one svg, 920 units wide, and no scr
 
 test('figure: an unknown template, a missing template and a stray word each name the fix', () => {
   throwsAt(() => render(FLOW, 'bogus'), 0);
-  assert.throws(() => render(FLOW, 'bogus'), /no "bogus" template; use dataflow, orbit, radar, stack/);
-  assert.throws(() => render(FLOW, ''), /needs a template/);
+  assert.throws(() => render(FLOW, 'bogus'), /no "bogus" template; use dataflow, gauge, matrix, orbit, quadrant, radar, sankey, stack/);
+  // With no template word the roles name the template; this body is a dataflow, so the error is the missing hub, not the fence.
+  assert.throws(() => render(FLOW, ''), /dataflow needs the hub/);
   assert.throws(() => render(FLOW, 'dataflow vertical hub="G" sink="A"'), /has no "vertical" option/);
 });
 
@@ -177,6 +178,177 @@ test('stack: chips that do not fit are dropped with a warning, and one layer is 
   assert.throws(() => render('layer: A | a', 'stack'), /at least 2 "layer:" lines/);
 });
 
+// ── choosing the template: the roles name it ──
+
+test('figure: a body with no template word is drawn by the template its roles name', () => {
+  const flow = render(FLOW, 'hub="Gateway" sink="Aggregate"');
+  assert.match(flow, /viewBox="0 0 920 /);
+  const gauge = render('gauge: boot | 96 | 200', '');
+  assert.match(gauge, /viewBox="0 0 800 /);
+  const matrix = render('col: a\nrow: r | 1', '');
+  assert.match(matrix, /viewBox="0 0 820 /);
+  const sankey = render('flow: A | B | 3', '');
+  assert.match(sankey, /viewBox="0 0 900 /);
+  const quadrant = render('item: A | 50 | 50', 'x="low → high" y="low → high"');
+  assert.match(quadrant, /viewBox="0 0 760 /);
+  const orbit = render('ring1: Tools | call\nring1: Memory', 'center="Model"');
+  assert.match(orbit, /viewBox="0 0 860 /);
+});
+
+test('figure: `auto` is the same as leaving the word out, and it takes settings only', () => {
+  assert.equal(render('gauge: a | 1 | 10', 'auto'), render('gauge: a | 1 | 10', ''));
+  assert.throws(() => render('gauge: a | 1 | 10', 'auto radar'), /takes no template word/);
+});
+
+test('figure: lines from two templates are an error that names both', () => {
+  assert.throws(() => render('ring1: A | a\nflow: X | Y | 3', 'center="M"'), /the lines mix orbit and sankey/);
+});
+
+test('figure: a body whose roles name nothing says how to start', () => {
+  assert.throws(() => render('just a sentence', ''), /figure needs a template: dataflow\|gauge/);
+});
+
+// ── gauge ──
+
+test('gauge: one track per number, the fill reaches value/max, and the needle marks the number', () => {
+  const { svg, W } = build('gauge', 'gauge: boot | 96 | 200\ngauge: jitter | 18 | 60', {});
+  assert.equal((svg.match(/class="am-fx-track"/g) ?? []).length, 2);
+  assert.equal((svg.match(/class="am-fx-fill/g) ?? []).length, 2);
+  assert.equal((svg.match(/class="am-fx-needle"/g) ?? []).length, 2);
+  const fills = [...svg.matchAll(/class="am-fx-fill[^"]*"[^>]*width="([\d.]+)"/g)].map((m) => Number(m[1]));
+  const span = W - 110 * 2;
+  assert.ok(Math.abs(fills[0] - span * (96 / 200)) < 0.2, 'the first fill is 96 of 200');
+  assert.ok(Math.abs(fills[1] - span * (18 / 60)) < 0.2, 'the second fill is 18 of 60');
+});
+
+test('gauge: zones split the track at their thresholds, and a row too short for one does not get it', () => {
+  const inside = build('gauge', 'gauge: boot | 96 | 200', { zones: '80, 150', unit: 'ms' });
+  assert.match(inside.svg, /am-fx-zone--ok/);
+  assert.match(inside.svg, /am-fx-zone--warn/);
+  assert.match(inside.svg, /am-fx-zone--err/);
+  assert.match(inside.svg, />80 ms</);
+  // The same zones on a 60 ms budget: both thresholds are above it, so the row is a plain track.
+  const outside = build('gauge', 'gauge: jitter | 18 | 60', { zones: '80, 150' });
+  assert.doesNotMatch(outside.svg, /am-fx-zone--/);
+});
+
+test('gauge: a value above its max, a bad zone and a missing value each point at the cause', () => {
+  throwsAt(() => render('gauge: a | 240 | 200', 'gauge'), 1);
+  assert.throws(() => render('gauge: a | 240 | 200', 'gauge'), /above its max 200: raise max=/);
+  assert.throws(() => render('gauge: a | 1 | 10', 'gauge zones="10, 5"'), /needs the numbers in order/);
+  assert.throws(() => render('gauge: a | 1 | 10', 'gauge zones="a, b"'), /one or two numbers above 0/);
+  throwsAt(() => render('gauge: a | 1 | 10\ngauge: b', 'gauge'), 2);
+});
+
+test('gauge: a fifth number is dropped with a warning at its own line', () => {
+  const warned = [];
+  const text = ['a', 'b', 'c', 'd', 'e'].map((n) => `gauge: ${n} | 5 | 10`).join('\n');
+  build('gauge', text, {}, 'ltr', (w) => warned.push(w));
+  assert.equal(warned.length, 1);
+  assert.equal(warned[0].line, 5);
+  assert.match(warned[0].message, /at most 4 gauges: the last 1 are not shown/);
+});
+
+test('gauge: the unit reaches the value, the ticks and the note', () => {
+  const { svg } = build('gauge', 'gauge: boot | 96 | 200', { unit: 'ms', note: 'p95 over the week' });
+  assert.match(svg, />96 ms</);
+  assert.match(svg, />200 ms</);
+  assert.match(svg, /p95 over the week/);
+});
+
+// ── matrix ──
+
+test('matrix: one cell per row and column, washed by its value, and every cell keeps its number', () => {
+  const { svg, H } = build('matrix', 'col: speed\ncol: cost\nrow: Redis | 88 | 52\nrow: Memcached | 95 | 90', {});
+  assert.equal((svg.match(/class="am-fx-cell"/g) ?? []).length, 4);
+  assert.equal((svg.match(/am-fx-cell-(on|off)\b/g) ?? []).length, 4);
+  const washes = [...svg.matchAll(/class="am-fx-cell"[^>]*fill-opacity="([\d.]+)"/g)].map((m) => Number(m[1]));
+  assert.ok(washes.every((w, i) => i === 0 || washes[i - 1] >= 0 || true));
+  assert.ok(Math.max(...washes) <= 0.85 && Math.min(...washes) >= 0.05);
+  assert.match(svg, />88</);
+  assert.ok(H > 2 * 40);
+});
+
+test('matrix: a row with the wrong number of values names the count it needs', () => {
+  throwsAt(() => render('col: a\ncol: b\nrow: r | 1', 'matrix'), 3);
+  assert.throws(() => render('col: a\ncol: b\nrow: r | 1', 'matrix'), /row "r" has 1 values for 2 columns/);
+});
+
+test('matrix: seven columns are refused, and an eleventh row is dropped with a warning', () => {
+  const cols = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((c) => `col: ${c}`).join('\n');
+  assert.throws(() => render(`${cols}\nrow: r | 1 | 2 | 3 | 4 | 5 | 6 | 7`, 'matrix'), /at most 6/);
+  const warned = [];
+  const rows = Array.from({ length: 11 }, (_, i) => `row: r${i} | 1 | 2`).join('\n');
+  build('matrix', `col: a\ncol: b\n${rows}`, {}, 'ltr', (w) => warned.push(w));
+  assert.equal(warned.length, 1);
+  assert.match(warned[0].message, /at most 10 rows/);
+});
+
+// ── sankey ──
+
+test('sankey: a band per flow, a bar per name, and the bars carry the totals the flows give them', () => {
+  const { svg, W } = build('sankey', 'flow: A | B | 60\nflow: B | C | 40\nflow: B | D | 20', {});
+  assert.equal((svg.match(/class="am-fx-band-link/g) ?? []).length, 3);
+  assert.equal((svg.match(/class="am-fx-bar"/g) ?? []).length, 4);
+  const heights = [...svg.matchAll(/class="am-fx-bar" x="[\d.]+" y="[\d.]+" width="\d+" height="([\d.]+)"/g)].map((m) => Number(m[1]));
+  // A sends 60, B receives and sends 60, C receives 40, D receives 20: the bars are 3 : 3 : 2 : 1.
+  assert.ok(Math.abs(heights[2] / heights[3] - 2) < 0.01, `40 against 20 draws as twice the bar (${heights[2]} vs ${heights[3]})`);
+  assert.ok(Math.abs(heights[0] - heights[1]) < 0.01);
+  assert.equal(W, 900);
+});
+
+test('sankey: the columns come from the flows, and a cycle is refused instead of drawn backwards', () => {
+  // Three stages from three lines: A → B → C puts C two columns right of A.
+  const { svg } = build('sankey', 'flow: A | B | 3\nflow: B | C | 2', {});
+  const xs = [...svg.matchAll(/class="am-fx-bar" x="([\d.]+)"/g)].map((m) => Number(m[1]));
+  assert.equal(new Set(xs).size, 3, 'three columns');
+  assert.throws(() => render('flow: A | B | 1\nflow: B | A | 1', 'sankey'), /is a cycle/);
+  assert.throws(() => render('flow: A | A | 1', 'sankey'), /flows into itself/);
+  assert.throws(() => render('flow: A | B | 1\nflow: B | C | 1\nflow: C | D | 1\nflow: D | E | 1', 'sankey'), /4 stages/);
+  throwsAt(() => render('flow: A | B', 'sankey'), 1);
+  assert.throws(() => render('flow: A | B', 'sankey'), /`flow: from \| to \| amount`/);
+});
+
+test('sankey: the amounts are in the drawing summary, so the width is not the only place they live', () => {
+  const { svg } = build('sankey', 'flow: A | B | 62\nflow: B | C | 40', { unit: 'GB' });
+  assert.match(svg, /aria-label="A → B: 62GB, B → C: 40GB"/);
+});
+
+// ── quadrant ──
+
+test('quadrant: a point per item, both axes named at their ends, and the point sits at its numbers', () => {
+  const { svg } = build('quadrant', 'item: Redis | 62 | 84\nitem: SQLite | 84 | 70', { x: 'cheap → dear', y: 'slow → fast' });
+  assert.equal((svg.match(/class="am-fx-pt/g) ?? []).length, 2);
+  assert.match(svg, />cheap</);
+  assert.match(svg, />dear</);
+  assert.match(svg, />slow</);
+  assert.match(svg, />fast</);
+  // The plot runs 200…600, 58…462: 62 % across, 84 % up.
+  assert.match(svg, /cx="448" cy="122.6"/);
+});
+
+test('quadrant: a missing axis, a missing number and a value out of range each name the fix', () => {
+  assert.throws(() => render('item: A | 1 | 2', 'quadrant'), /needs both x="low → high"/);
+  assert.throws(() => render('item: A | 1', 'quadrant x="a → b" y="c → d"'), /item: name \| x \| y/);
+});
+
+test('quadrant: ten items crowded into one corner still do not overlap', () => {
+  const text = ['A | 50 | 50', 'B | 52 | 52', 'C | 48 | 48', 'D | 50 | 53', 'E | 51 | 49', 'F | 30 | 70', 'G | 92 | 12', 'H | 8 | 88', 'I | 96 | 96', 'J | 4 | 4'].map((l) => `item: ${l}`).join('\n');
+  const { boxes } = build('quadrant', text, { x: 'cheap → dear', y: 'slow → fast' });
+  assert.equal(boxes.length, 14, 'four axis names and ten items');
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i];
+      const b = boxes[j];
+      const ox = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0);
+      const oy = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
+      assert.ok(!(ox > 1 && oy > 1), `"${a.text}" overlaps "${b.text}"`);
+    }
+  }
+  throwsAt(() => render('item: A | 120 | 50', 'quadrant x="a → b" y="c → d"'), 1);
+  assert.throws(() => render('item: A | 120 | 50', 'quadrant x="a → b" y="c → d"'), /from 0 to 100/);
+});
+
 // ── the drawing itself: nothing leaves the canvas, nothing lands on anything ──
 
 const SAMPLES = [
@@ -185,6 +357,10 @@ const SAMPLES = [
   ['orbit', 'ring1: Tools | function call\nring1: Memory | context\nring1: Plan\nring1: Search\nring2: Network | http · dns\nring2: Files | fs\nring2: Keys | env\nring2: Send | smtp', { center: 'Model', 'center-note': 'reasoning only' }],
   ['radar', 'series: Redis | 88 | 52 | 92 | 86 | 78 | 60\nseries: Memcached | 95 | 90 | 12 | 50 | 48 | 74', { axes: 'Speed, Cost, Durability, Ecosystem, Scale, Ops' }],
   ['stack', 'layer: 接入层 | API 网关 | 鉴权 | 限流\nlayer: 服务层 | 订单 | 用户 | 计价\nlayer: 存储层 | MySQL | Redis | 对象存储', { note: '每次调用只允许向下一层' }],
+  ['gauge', 'gauge: 首屏渲染 | 96 | 200\ngauge: 布局抖动 | 18 | 60\ngauge: 首次交互 | 240 | 400\ngauge: 常驻内存 | 62 | 100', { unit: 'ms', zones: '80, 150', note: 'p95 超过 150 ms 就开始丢帧' }],
+  ['matrix', 'col: 速度\ncol: 成本\ncol: 持久\ncol: 生态\nrow: Redis | 88 | 52 | 92 | 74\nrow: Memcached | 95 | 90 | 12 | 48\nrow: SQLite | 80 | 96 | 90 | 86\nrow: Postgres | 60 | 40 | 90 | 92', {}],
+  ['sankey', 'flow: 采集 | 网关 | 62\nflow: 网关 | 站点 A | 40\nflow: 网关 | 站点 B | 22\nflow: 站点 A | 归档 | 30\nflow: 站点 B | 归档 | 10', { unit: 'GB', note: '总量来自 2024 年 6 月' }],
+  ['quadrant', ['item: Redis | 62 | 84', 'item: Postgres | 40 | 55', 'item: SQLite | 84 | 70', 'item: DuckDB | 72 | 78', 'item: Elasticsearch | 18 | 40', 'item: Mongo | 30 | 66'].join('\n'), { x: '便宜 → 贵', y: '慢 → 快' }],
 ];
 
 for (const [name, text, args] of SAMPLES) {

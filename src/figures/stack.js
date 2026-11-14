@@ -23,6 +23,7 @@ const NAME_ROOM = 150;
 export default {
   name: 'stack',
   summary: 'Stacked layers with channels between them',
+  roles: ['layer'],
 
   render(text, { args = {}, uid = 'fx', dir = 'ltr', warn } = {}) {
     const rows = readRows(text, ['layer'], 'stack');

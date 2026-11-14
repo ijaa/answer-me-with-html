@@ -780,7 +780,7 @@ var DELTA_CSS = `/* Change markers (only on pages that have one). Only the Chang
 `;
 var RTL_CSS = '/* Right-to-left pages (html[dir="rtl"]: Hebrew, Arabic, Persian, Urdu, Yiddish). base.css uses logical properties, so the layout\n   mirrors by itself; this file holds only what logical properties cannot say. A left-to-right page never carries it. */\n\n/* Code, diffs and paths read left to right in every language. Inline code is isolated, so the text around it keeps its order. */\nhtml[dir="rtl"] .am-codeblock, html[dir="rtl"] .am-code, html[dir="rtl"] pre { direction: ltr; text-align: left; }\nhtml[dir="rtl"] :not(pre) > code { direction: ltr; unicode-bidi: isolate; }\n\n/* Small labels use the monospace font. No common monospace font has Hebrew or Arabic letters, so the browser borrows a fixed-width\n   fallback that spaces the letters apart; letter spacing and capitals also break these scripts. Labels use the sans font instead. */\nhtml[dir="rtl"] .am-md th, html[dir="rtl"] .am-kv dt, html[dir="rtl"] .am-head-meta b, html[dir="rtl"] .am-panel-meta,\nhtml[dir="rtl"] .am-annot-meta, html[dir="rtl"] .am-tree-tag, html[dir="rtl"] .am-timeline--v .am-tl-when,\nhtml[dir="rtl"] .am-diagram .am-cluster-label, html[dir="rtl"] .am-delta-bar, html[dir="rtl"] .am-lim-val,\nhtml[dir="rtl"] .am-colophon, html[dir="rtl"] .am-reply textarea {\n  font-family: var(--font-sans); letter-spacing: normal; text-transform: none;\n}\nhtml[dir="rtl"] .am-head h1 { letter-spacing: normal; }\n/* The annotated sentence is set in the sans font too; src/components/annot.js measures the placement of its notes in that font. */\nhtml[dir="rtl"] .am-annot-line { font-family: var(--font-sans); }\n\n/* Diagram text: the drawing is already mirrored (src/components/flow.js, sequence.js); the text inside reads right to left. */\nhtml[dir="rtl"] .am-diagram svg { direction: rtl; }\n\n/* Limits scale: the ticks are placed from the right (src/components/limits.js), so each one centres on its point from that side. */\nhtml[dir="rtl"] .am-lim-ticks span { transform: translateX(50%); }\nhtml[dir="rtl"] .am-lim-ticks span:first-child { transform: none; }\n\n/* The limits value is written in the page language (src/languages/he.js: "420 of 1000 KB" in Hebrew words), so it reads right to left\n   like the label. The label, its note and the value are isolated from each other: "Redis" at the end of a label and "70%" at the\n   start of its note would otherwise run together as one left-to-right piece. */\nhtml[dir="rtl"] .am-lim-head > span, html[dir="rtl"] .am-lim-note, html[dir="rtl"] .am-lim-val { unicode-bidi: isolate; }\n\n/* Horizontal timeline: a date written the Hebrew way (15.11.2026) is wider than a year, and in a narrow panel the dates of\n   neighbouring items ran into each other ("1.12.202615.11.2026"). The date shrinks to fit its column, never above its usual 15px. */\nhtml[dir="rtl"] .am-timeline--h .am-tl-when { font-size: min(var(--am-fs-heading), calc(100cqi / var(--n, 1) / 6.2)); white-space: nowrap; }\n@container (max-width: 560px) {\n  html[dir="rtl"] .am-timeline--h .am-tl-when { font-size: var(--am-fs-heading); }\n}\n\n/* Video player (src/video/render.js): the scenes lay out right to left like a page, and what video.css places with left / right mirrors here.\n   A theme mirrors its own placements with video.rtlCss. The controls row stays left to right, as in common video players: the play\n   button on the left, then the clock, the progress bar with its chapter ticks, the speed and the export button. */\nhtml[dir="rtl"][data-video] .amv-ruler--top span + span, html[dir="rtl"][data-video] .amv-ruler--bottom span + span { border-left: 0; border-right: 1px solid var(--line); }\nhtml[dir="rtl"][data-video] .amv-titleblock { text-align: right; }\n/* The title block labels and the scene header numbers use the monospace font in video.css: sans here, as for the small page labels above. */\nhtml[dir="rtl"][data-video] .amv-titleblock b, html[dir="rtl"][data-video] .amv-scene-meta { font-family: var(--font-sans); letter-spacing: normal; }\nhtml[dir="rtl"][data-video] .amv-titleblock div + div { border-left: 0; border-right: 1px solid var(--line); }\nhtml[dir="rtl"][data-video] .amv-controls { direction: ltr; }\n\n/* Remark mode: a note inside a code block reads in the page direction, not in the left-to-right direction of the code. */\nhtml[dir="rtl"] pre .am-mark-note { direction: rtl; }\n/* A code block reads left to right, so its inline start is its left edge; the mark bar goes to the right like the other marks. */\nhtml[dir="rtl"] pre.am-mark { border-inline-start: 0; padding-inline-start: 0; border-inline-end: 3px solid var(--mark); }\n';
 var CHART_CSS = '/* Charts (src/components/chart.js). Only a page with a chart carries this file, the way only a page with math carries the math styles.\n   Series colors are the diagram tokens --series-1 to --series-6 (docs/reference.md, "Diagram tokens"): a theme that sets one wins, and\n   the fallbacks are the fixed palette below (Tableau 10 style), a set for light and a set for dark. Bars carry their value, the legend names\n   the series and the data table holds the numbers, so a color is never the only way to read a bar. The axis, grid and labels read the usual\n   tokens, so a theme that sets nothing still gets a chart in its own colors. */\nhtml {\n  --am-ch-1: #4e79a7; --am-ch-2: #f28e2b; --am-ch-3: #e15759; --am-ch-4: #76b7b2; --am-ch-5: #59a14f; --am-ch-6: #b07aa1;\n}\nhtml[data-mode="dark"] {\n  --am-ch-1: #7aa6d6; --am-ch-2: #f5a55a; --am-ch-3: #ef7f80; --am-ch-4: #8fd0cb; --am-ch-5: #7cc472; --am-ch-6: #c99bbd;\n}\n@media (prefers-color-scheme: dark) {\n  html[data-mode="auto"] {\n    --am-ch-1: #7aa6d6; --am-ch-2: #f5a55a; --am-ch-3: #ef7f80; --am-ch-4: #8fd0cb; --am-ch-5: #7cc472; --am-ch-6: #c99bbd;\n  }\n}\n\n.am-ch-s1 { fill: var(--series-1, var(--am-ch-1)); }\n.am-ch-s2 { fill: var(--series-2, var(--am-ch-2)); }\n.am-ch-s3 { fill: var(--series-3, var(--am-ch-3)); }\n.am-ch-s4 { fill: var(--series-4, var(--am-ch-4)); }\n.am-ch-s5 { fill: var(--series-5, var(--am-ch-5)); }\n.am-ch-s6 { fill: var(--series-6, var(--am-ch-6)); }\n/* A highlighted row of a single series takes the accent color; in a chart with a highlight the other rows are gray (a line is never gray). */\n.am-ch-hi { fill: var(--accent, #1d5fbf); }\n.am-ch-row.is-dim .am-ch-bar, .am-ch-row.is-dim .am-ch-slice, .am-ch-row.is-dim .am-ch-sw { fill: var(--line-2, #d6dae1); fill: color-mix(in oklch, var(--ink-3, #8b929e) 40%, var(--paper, #ffffff)); }\n\n/* A line: a stroke in the series color, a dot on each point; the dot has an outline in the paper color where lines cross. A pie slice has\n   the same outline, which is the gap between slices. */\n.am-ch-line { fill: none; stroke-width: 2.5; stroke-linecap: round; }\n.am-ch-line.am-ch-s1 { stroke: var(--series-1, var(--am-ch-1)); }\n.am-ch-line.am-ch-s2 { stroke: var(--series-2, var(--am-ch-2)); }\n.am-ch-line.am-ch-s3 { stroke: var(--series-3, var(--am-ch-3)); }\n.am-ch-line.am-ch-s4 { stroke: var(--series-4, var(--am-ch-4)); }\n.am-ch-line.am-ch-s5 { stroke: var(--series-5, var(--am-ch-5)); }\n.am-ch-line.am-ch-s6 { stroke: var(--series-6, var(--am-ch-6)); }\n.am-ch-dot, .am-ch-slice { stroke: var(--paper, #ffffff); stroke-width: 1.5; }\n.am-ch-slice { stroke-width: 2; stroke-linejoin: round; }\n.am-ch-guide { stroke: var(--ink-3, #8b929e); stroke-width: 1; stroke-dasharray: 3 3; }\n\n.am-ch-grid { stroke: var(--line-2, #d6dae1); stroke-width: 1; }\n.am-ch-zero { stroke: var(--ink-3, #8b929e); stroke-width: 1; }\n.am-diagram .am-ch-cat, .am-diagram .am-ch-leg { fill: var(--ink-2, #4b5260); font-size: var(--am-fs-d-chartCat); }\n.am-diagram .am-ch-tick, .am-diagram .am-ch-val { fill: var(--ink-2, #4b5260); font-size: var(--am-fs-d-chartTick); }\n/* The value labels of a highlighted row in a chart with several series take the color of their series, in a heavier weight to read on it. */\n.am-diagram .am-ch-val.am-ch-s1, .am-diagram .am-ch-val.am-ch-s2, .am-diagram .am-ch-val.am-ch-s3, .am-diagram .am-ch-val.am-ch-s4, .am-diagram .am-ch-val.am-ch-s5, .am-diagram .am-ch-val.am-ch-s6 { font-weight: 600; }\n.am-diagram .am-ch-val.am-ch-s1 { fill: var(--series-1, var(--am-ch-1)); }\n.am-diagram .am-ch-val.am-ch-s2 { fill: var(--series-2, var(--am-ch-2)); }\n.am-diagram .am-ch-val.am-ch-s3 { fill: var(--series-3, var(--am-ch-3)); }\n.am-diagram .am-ch-val.am-ch-s4 { fill: var(--series-4, var(--am-ch-4)); }\n.am-diagram .am-ch-val.am-ch-s5 { fill: var(--series-5, var(--am-ch-5)); }\n.am-diagram .am-ch-val.am-ch-s6 { fill: var(--series-6, var(--am-ch-6)); }\n/* A value label may sit over a line or a guide: a halo in the paper color keeps it readable. */\n.am-diagram .am-ch-val { paint-order: stroke; stroke: var(--paper, #ffffff); stroke-width: 3px; stroke-linejoin: round; }\n.am-diagram .am-ch-num { fill: var(--ink-2, #4b5260); font-size: var(--am-fs-d-chartCat); font-variant-numeric: tabular-nums; }\n.am-diagram .am-ch-total { fill: var(--ink, #1a1d23); font-weight: 600; }\n\n/* The data table under the chart: collapsed, for a screen reader and for a reader who wants the numbers. It looks like a Markdown table. */\n.am-ch-data { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line-2); text-align: start; font-size: var(--am-fs-text); }\n.am-ch-data summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font: var(--am-fs-label)/1.3 var(--font-mono); color: var(--ink-3); letter-spacing: .04em; }\n.am-ch-data summary::-webkit-details-marker { display: none; }\n.am-ch-data summary::before { content: ""; width: 0; height: 0; border-block: 4px solid transparent; border-inline-start: 6px solid currentColor; transition: transform .15s; }\n.am-ch-data[open] summary::before { transform: rotate(90deg); }\n/* The triangle points to the end side, which is the left on a right-to-left page: it turns the other way to point down. */\nhtml[dir="rtl"] .am-ch-data[open] summary::before { transform: rotate(-90deg); }\n@media (prefers-reduced-motion: reduce) { .am-ch-data summary::before { transition: none; } }\n.am-ch-data summary:hover { color: var(--ink); }\n.am-ch-data table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: var(--am-fs-text); }\n.am-ch-data thead th { font: var(--am-fs-label)/1.3 var(--font-mono); color: var(--ink-2); font-weight: 400; padding: 6px 10px; border-bottom: 1px solid var(--line); }\n.am-ch-data thead th::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-inline-end: 6px; }\n.am-ch-data thead th:nth-child(2)::before { background: var(--series-1, var(--am-ch-1)); }\n.am-ch-data thead th:nth-child(3)::before { background: var(--series-2, var(--am-ch-2)); }\n.am-ch-data thead th:nth-child(4)::before { background: var(--series-3, var(--am-ch-3)); }\n.am-ch-data thead th:nth-child(5)::before { background: var(--series-4, var(--am-ch-4)); }\n.am-ch-data thead th:nth-child(6)::before { background: var(--series-5, var(--am-ch-5)); }\n.am-ch-data thead th:nth-child(7)::before { background: var(--series-6, var(--am-ch-6)); }\n.am-ch-data--pie thead th::before { content: none; }\n.am-ch-data th, .am-ch-data td { padding: 7px 10px; font-variant-numeric: tabular-nums; }\n.am-ch-data th[scope="row"] { text-align: start; font-weight: 400; }\n/* Numbers read left to right in every language and line up on their right edge, under the series name. */\n.am-ch-data td, .am-ch-data thead th { text-align: right; }\n.am-ch-data tbody tr:nth-child(even) > * { background: var(--fill); }\n';
-var FIGURE_CSS = "/* Figure styles: the static picture. Nothing here moves \u2014 src/themes/motion.css adds the animation, and it is only in the page\n   when the page moves. Every color is a token with a fallback, so a theme that sets the diagram tokens changes a figure, and a\n   theme that sets none still gets a readable drawing. */\n\n.am-fx {\n  --am-fx-1: var(--accent, #1d5fbf);\n  --am-fx-2: var(--series-1, #0e8f63);\n  --am-fx-3: var(--series-2, #0a76b8);\n  --am-fx-4: var(--series-3, #b4660a);\n  --am-fx-halo: 0.12;\n  --am-fx-sweep: 0.22;\n  --am-fx-hair: var(--line-2, #d9dde4);\n  background: transparent;\n}\n\n/* \u2500\u2500 series: one indirection, so a comet, a pulse and a polygon of the same series cannot drift apart \u2500\u2500 */\n.am-fx .am-fx-s1 { --am-fx-this: var(--am-fx-1); }\n.am-fx .am-fx-s2 { --am-fx-this: var(--am-fx-2); }\n.am-fx .am-fx-s3 { --am-fx-this: var(--am-fx-3); }\n.am-fx .am-fx-s4 { --am-fx-this: var(--am-fx-4); }\n\n/* \u2500\u2500 the ground \u2500\u2500 */\n.am-fx .am-fx-dots { opacity: 0.45; }\n.am-fx .am-fx-dot { fill: var(--am-fx-hair); }\n.am-fx .am-fx-halo-a { stop-color: var(--am-fx-1); stop-opacity: var(--am-fx-halo); }\n.am-fx .am-fx-halo-b { stop-color: var(--am-fx-1); stop-opacity: 0; }\n.am-fx .am-fx-sweep-a { stop-color: var(--am-fx-3); stop-opacity: var(--am-fx-sweep); }\n.am-fx .am-fx-sweep-b { stop-color: var(--am-fx-3); stop-opacity: 0; }\n\n/* \u2500\u2500 edges and tracks \u2500\u2500 */\n.am-fx .am-fx-edge { fill: none; stroke: var(--am-fx-hair); stroke-width: 1.2; }\n.am-fx .am-fx-edge--dim { stroke: var(--am-fx-hair); opacity: 0.8; }\n.am-fx .am-fx-track { fill: var(--am-fx-hair); }\n.am-fx .am-fx-axis { stroke: var(--am-fx-hair); stroke-dasharray: 2 4; }\n.am-fx .am-fx-src,\n.am-fx .am-fx-port { fill: var(--ink-3, #8b929e); }\n\n/* \u2500\u2500 nodes \u2500\u2500 */\n.am-fx .am-fx-node-bg { fill: var(--paper, #fff); stroke: var(--line, #1d2026); stroke-width: var(--bw, 1.5px); }\n.am-fx .am-fx-node-bg--bg { fill: var(--bg, #f6f6f3); }\n.am-fx .am-fx-node-bg--ink { fill: var(--ink, #16181d); stroke: var(--ink, #16181d); }\n.am-fx .am-fx-node-in { fill: none; stroke: var(--line-2, #d6dae1); stroke-dasharray: 2 6; }\n.am-fx .am-fx-stage { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.4; }\n.am-fx .am-fx-band { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.2; }\n.am-fx .am-fx-chip { fill: var(--fill, #f3f5f8); stroke: var(--line-2, #d6dae1); stroke-width: 1; }\n.am-fx .am-fx-ring { fill: none; stroke: var(--am-fx-hair); }\n.am-fx .am-fx-ring--dim { stroke-dasharray: 2 6; opacity: 0.75; }\n\n/* \u2500\u2500 a profile (radar) \u2500\u2500 */\n.am-fx .am-fx-area { stroke: var(--am-fx-this, var(--am-fx-1)); fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.12; stroke-width: 1.8; stroke-linejoin: round; }\n.am-fx .am-fx-vertex { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }\n.am-fx .am-fx-swatch { fill: var(--am-fx-this, var(--am-fx-1)); stroke: none; }\n.am-fx .am-fx-sweep-line { stroke: var(--am-fx-3); stroke-width: 1; opacity: 0.6; }\n.am-fx .am-fx-hub { fill: var(--am-fx-3); }\n\n/* \u2500\u2500 text: a size and a color for each role, overriding the diagram defaults \u2500\u2500 */\n.am-fx .am-fx-name { font-size: 12.5px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-row { font-size: 13.5px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-node { font-size: 15px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-node-inv { font-size: 15px; fill: var(--bg, #f6f6f3); }\n.am-fx .am-fx-sub { font-size: 11px; fill: var(--ink-3, #8b929e); }\n.am-fx .am-fx-chip-name { font-size: 11.5px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-axis-name { font-size: 12px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-legend { font-size: 11.5px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-bold { font-weight: 600; }\n.am-fx .am-fx-mono { font-family: var(--font-mono, monospace); }\n\n/* \u2500\u2500 motion is off until motion.css says otherwise: a light tail with no animation is a stray mark, a pulse ring with no\n   animation is a second circle around every node, so both start hidden and the stylesheet that animates them shows them \u2500\u2500 */\n.am-fx .am-fx-comet { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-linecap: round; opacity: 0; }\n.am-fx .am-fx-pulse { opacity: 0; transform-box: fill-box; transform-origin: center; }\n.am-fx .am-fx-pulse circle { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); }\n.am-fx .am-fx-flash { fill: var(--am-fx-this, var(--am-fx-1)); opacity: 0; }\n";
+var FIGURE_CSS = "/* Figure styles: the static picture. Nothing here moves \u2014 src/themes/motion.css adds the animation, and it is only in the page\n   when the page moves. Every color is a token with a fallback, so a theme that sets the diagram tokens changes a figure, and a\n   theme that sets none still gets a readable drawing. */\n\n.am-fx {\n  --am-fx-1: var(--accent, #1d5fbf);\n  --am-fx-2: var(--series-1, #0e8f63);\n  --am-fx-3: var(--series-2, #0a76b8);\n  --am-fx-4: var(--series-3, #b4660a);\n  --am-fx-halo: 0.12;\n  --am-fx-sweep: 0.22;\n  --am-fx-hair: var(--line-2, #d9dde4);\n  background: transparent;\n}\n\n/* \u2500\u2500 series: one indirection, so a comet, a pulse and a polygon of the same series cannot drift apart \u2500\u2500 */\n.am-fx .am-fx-s1 { --am-fx-this: var(--am-fx-1); }\n.am-fx .am-fx-s2 { --am-fx-this: var(--am-fx-2); }\n.am-fx .am-fx-s3 { --am-fx-this: var(--am-fx-3); }\n.am-fx .am-fx-s4 { --am-fx-this: var(--am-fx-4); }\n\n/* \u2500\u2500 the ground \u2500\u2500 */\n.am-fx .am-fx-dots { opacity: 0.45; }\n.am-fx .am-fx-dot { fill: var(--am-fx-hair); }\n.am-fx .am-fx-halo-a { stop-color: var(--am-fx-1); stop-opacity: var(--am-fx-halo); }\n.am-fx .am-fx-halo-b { stop-color: var(--am-fx-1); stop-opacity: 0; }\n.am-fx .am-fx-sweep-a { stop-color: var(--am-fx-3); stop-opacity: var(--am-fx-sweep); }\n.am-fx .am-fx-sweep-b { stop-color: var(--am-fx-3); stop-opacity: 0; }\n\n/* \u2500\u2500 edges and tracks \u2500\u2500 */\n.am-fx .am-fx-edge { fill: none; stroke: var(--am-fx-hair); stroke-width: 1.2; }\n.am-fx .am-fx-edge--dim { stroke: var(--am-fx-hair); opacity: 0.8; }\n.am-fx .am-fx-track { fill: var(--am-fx-hair); }\n.am-fx .am-fx-axis { stroke: var(--am-fx-hair); stroke-dasharray: 2 4; }\n.am-fx .am-fx-src,\n.am-fx .am-fx-port { fill: var(--ink-3, #8b929e); }\n\n/* \u2500\u2500 nodes \u2500\u2500 */\n.am-fx .am-fx-node-bg { fill: var(--paper, #fff); stroke: var(--line, #1d2026); stroke-width: var(--bw, 1.5px); }\n.am-fx .am-fx-node-bg--bg { fill: var(--bg, #f6f6f3); }\n.am-fx .am-fx-node-bg--ink { fill: var(--ink, #16181d); stroke: var(--ink, #16181d); }\n.am-fx .am-fx-node-in { fill: none; stroke: var(--line-2, #d6dae1); stroke-dasharray: 2 6; }\n.am-fx .am-fx-stage { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.4; }\n.am-fx .am-fx-band { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.2; }\n.am-fx .am-fx-chip { fill: var(--fill, #f3f5f8); stroke: var(--line-2, #d6dae1); stroke-width: 1; }\n.am-fx .am-fx-ring { fill: none; stroke: var(--am-fx-hair); }\n.am-fx .am-fx-ring--dim { stroke-dasharray: 2 6; opacity: 0.75; }\n\n/* \u2500\u2500 a profile (radar) \u2500\u2500 */\n.am-fx .am-fx-area { stroke: var(--am-fx-this, var(--am-fx-1)); fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.12; stroke-width: 1.8; stroke-linejoin: round; }\n.am-fx .am-fx-vertex { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }\n.am-fx .am-fx-swatch { fill: var(--am-fx-this, var(--am-fx-1)); stroke: none; }\n.am-fx .am-fx-sweep-line { stroke: var(--am-fx-3); stroke-width: 1; opacity: 0.6; }\n.am-fx .am-fx-hub { fill: var(--am-fx-3); }\n\n/* \u2500\u2500 a gauge: a track, the zones that qualify it, the fill that reaches the number, and a needle on the exact value \u2500\u2500 */\n.am-fx .am-fx-zone--ok { fill: var(--ok, #10844f); fill-opacity: 0.16; }\n.am-fx .am-fx-zone--warn { fill: var(--warn, #a8620a); fill-opacity: 0.2; }\n.am-fx .am-fx-zone--err { fill: var(--err, #c8392b); fill-opacity: 0.14; }\n.am-fx .am-fx-fill { fill: var(--am-fx-1); transform-box: fill-box; transform-origin: left center; }\n.am-fx .am-fx-fill--rev { transform-origin: right center; }\n.am-fx .am-fx-needle { stroke: var(--ink, #16181d); stroke-width: 1.6; stroke-linecap: round; }\n\n/* \u2500\u2500 a matrix: the wash is the value, so it is an attribute of the cell and the color is still a token \u2500\u2500 */\n.am-fx .am-fx-cell { fill: var(--am-fx-1); }\n.am-fx .am-fx-cell-on { font-size: 12px; fill: var(--bg, #f6f6f3); }\n.am-fx .am-fx-cell-off { font-size: 12px; fill: var(--ink, #16181d); }\n\n/* \u2500\u2500 a sankey: a band is a flow, a bar is its end in a column \u2500\u2500 */\n.am-fx .am-fx-band-link { fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.22; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-opacity: 0.3; stroke-width: 1; }\n.am-fx .am-fx-bar { fill: var(--ink, #16181d); }\n\n/* \u2500\u2500 a quadrant: a point, and the head of an axis \u2500\u2500 */\n.am-fx .am-fx-pt { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }\n.am-fx .am-fx-arrow { fill: var(--am-fx-hair); }\n\n/* \u2500\u2500 text: a size and a color for each role, overriding the diagram defaults \u2500\u2500 */\n.am-fx .am-fx-name { font-size: 12.5px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-row { font-size: 13.5px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-node { font-size: 15px; fill: var(--ink, #16181d); }\n.am-fx .am-fx-node-inv { font-size: 15px; fill: var(--bg, #f6f6f3); }\n.am-fx .am-fx-sub { font-size: 11px; fill: var(--ink-3, #8b929e); }\n.am-fx .am-fx-chip-name { font-size: 11.5px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-axis-name { font-size: 12px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-legend { font-size: 11.5px; fill: var(--ink-2, #4b5260); }\n.am-fx .am-fx-bold { font-weight: 600; }\n.am-fx .am-fx-mono { font-family: var(--font-mono, monospace); }\n\n/* \u2500\u2500 motion is off until motion.css says otherwise: a light tail with no animation is a stray mark, a pulse ring with no\n   animation is a second circle around every node, so both start hidden and the stylesheet that animates them shows them \u2500\u2500 */\n.am-fx .am-fx-comet { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-linecap: round; opacity: 0; }\n.am-fx .am-fx-pulse { opacity: 0; transform-box: fill-box; transform-origin: center; }\n.am-fx .am-fx-pulse circle { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); }\n.am-fx .am-fx-flash { fill: var(--am-fx-this, var(--am-fx-1)); opacity: 0; }\n";
 var MOTION_CSS = `/* Page motion: the animation rules for figures and charts. This file is only in the page when the page has a drawing and
    motion is not off, so a still page carries none of it. Every rule is under html[data-motion], print and a reader who asks for
    reduced motion cancel all of them, and nothing here changes the drawing when it is off: the static picture is the final state.
@@ -852,6 +852,24 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-draw {
   animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
 }
 
+/* \u2500\u2500 a gauge fills to its number, once \u2500\u2500
+   The bar is drawn at its final width and the animation scales it from nothing, so a still page shows the value without a length
+   written into a keyframe. transform-origin comes from figure.css, left or right, so the fill grows from the axis on either side. */
+@keyframes am-fx-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-fill {
+  animation: am-fx-grow calc(0.9s * var(--am-fx-phase, 1)) cubic-bezier(0.3, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
+/* \u2500\u2500 a matrix arrives along its diagonal: the delay per cell is (row + column) \xD7 60 ms, which reads as top left first \u2500\u2500 */
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-cell {
+  animation: am-fx-in calc(0.45s * var(--am-fx-phase, 1)) linear both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
 /* \u2500\u2500 a ring or a sweep that turns about a point the template wrote in drawing units \u2500\u2500 */
 @keyframes am-fx-spin {
   to { transform: rotate(360deg); }
@@ -885,6 +903,8 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-chart {
   .am-fx .am-fx-flash,
   .am-fx .am-fx-draw,
   .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
   .am-chart { animation: none !important; }
 }
 
@@ -898,6 +918,8 @@ html:is([data-motion="subtle"], [data-motion="expressive"]) .am-chart {
   .am-fx .am-fx-flash,
   .am-fx .am-fx-draw,
   .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
   .am-chart { animation: none !important; }
 }
 
@@ -910,6 +932,8 @@ html[data-video] .am-fx .am-fx-pulse,
 html[data-video] .am-fx .am-fx-flash,
 html[data-video] .am-fx .am-fx-draw,
 html[data-video] .am-fx .am-fx-spin,
+html[data-video] .am-fx .am-fx-fill,
+html[data-video] .am-fx .am-fx-cell,
 html[data-video] .am-chart { animation: none !important; }
 `;
 var MATH_CSS = `/*
@@ -2649,11 +2673,11 @@ function pickTheme({ scope, template, visuals }) {
 }
 function themeSet(user = [], broken = /* @__PURE__ */ new Map(), folderWarning) {
   const all = [...ALL, ...user];
-  const list2 = (scope) => all.filter((t) => t.scope.includes(scope));
-  const names2 = (scope) => list2(scope).map((t) => t.name);
+  const list3 = (scope) => all.filter((t) => t.scope.includes(scope));
+  const names2 = (scope) => list3(scope).map((t) => t.name);
   const unusable = [...broken].filter(([name2]) => !BUILTIN_NAMES.includes(name2));
   return Object.freeze({
-    list: list2,
+    list: list3,
     names: names2,
     get: (name2) => all.find((t) => t.name === name2),
     // Names a draft or flag may give: usable themes plus broken ones, so the error can say what is wrong with the file.
@@ -2986,8 +3010,8 @@ ${p}` : p;
 `), x = k.raw + `
 ` + b.replace(this.rules.other.blockquoteSetextReplace2, ""), f2 = this.blockquote(x);
           o[o.length - 1] = f2;
-          let S2 = x.substring(f2.raw.length).replace(/^\n/, ""), R4 = S2 ? S2.split(`
-`).length : 0, C = R4 ? n.slice(0, -R4) : n;
+          let S2 = x.substring(f2.raw.length).replace(/^\n/, ""), R5 = S2 ? S2.split(`
+`).length : 0, C = R5 ? n.slice(0, -R5) : n;
           C.length > 0 && (s = `${s}
 ${C.join(`
 `)}`), r = r.substring(0, r.length - k.text.length) + f2.text;
@@ -3026,15 +3050,15 @@ ${S2}`;
         e = e.substring(t[0].length);
         let k = t[2].split(`
 `, 1)[0], b = t[1].length, x = this.options.pedantic ? V(k, b) : k.replace(this.rules.other.leadingSpaceTab, (Q2) => V(Q2, b)), f2 = e.split(`
-`, 1)[0], S2 = !x.trim(), R4 = 0;
-        if (this.options.pedantic ? (R4 = 2, d = x.trimStart()) : S2 ? R4 = b + 1 : (R4 = x.search(this.rules.other.nonSpaceChar), R4 = R4 > 4 ? 1 : R4, d = x.slice(R4), R4 += b), S2 && this.rules.other.blankLine.test(f2) && (e = e.substring(f2.length + 1), p = true), !p) {
-          let Q2 = this.rules.other.nextBulletRegex(R4), E = this.rules.other.hrRegex(R4), j = this.rules.other.fencesBeginRegex(R4), F = this.options.pedantic ? this.rules.other.pedanticHeadingBeginRegex(R4) : this.rules.other.headingBeginRegex(R4), Le2 = this.rules.other.htmlBeginRegex(R4), Ae2 = this.rules.other.blockquoteBeginRegex(R4);
+`, 1)[0], S2 = !x.trim(), R5 = 0;
+        if (this.options.pedantic ? (R5 = 2, d = x.trimStart()) : S2 ? R5 = b + 1 : (R5 = x.search(this.rules.other.nonSpaceChar), R5 = R5 > 4 ? 1 : R5, d = x.slice(R5), R5 += b), S2 && this.rules.other.blankLine.test(f2) && (e = e.substring(f2.length + 1), p = true), !p) {
+          let Q2 = this.rules.other.nextBulletRegex(R5), E = this.rules.other.hrRegex(R5), j = this.rules.other.fencesBeginRegex(R5), F = this.options.pedantic ? this.rules.other.pedanticHeadingBeginRegex(R5) : this.rules.other.headingBeginRegex(R5), Le2 = this.rules.other.htmlBeginRegex(R5), Ae2 = this.rules.other.blockquoteBeginRegex(R5);
           for (; e; ) {
             let he2 = e.split(`
 `, 1)[0], Z2;
             if (f2 = he2, this.options.pedantic ? (f2 = f2.replace(this.rules.other.listReplaceNesting, "  "), Z2 = f2) : Z2 = f2.replace(this.rules.other.leadingSpaceTab, (de2) => V(de2)), j.test(f2) || F.test(f2) || Le2.test(f2) || Ae2.test(f2) || Q2.test(f2) || E.test(f2)) break;
-            if (Z2.search(this.rules.other.nonSpaceChar) >= R4 || !f2.trim()) d += `
-` + Z2.slice(R4);
+            if (Z2.search(this.rules.other.nonSpaceChar) >= R5 || !f2.trim()) d += `
+` + Z2.slice(R5);
             else {
               if (S2 || x.replace(this.rules.other.tabCharGlobal, "    ").search(this.rules.other.nonSpaceChar) >= 4 || j.test(x) || F.test(x) || E.test(x)) break;
               let ze2 = !this.options.pedantic && /^ {0,3}(?:=+|-+) *$/.test(f2) && this.rules.block.lheading.test(`${x}
@@ -3042,7 +3066,7 @@ ${f2}`) ? `    ${Z2.replace(/^ {0,3}/, "")}` : f2;
               d += `
 ` + ze2;
             }
-            S2 = !f2.trim(), e = e.substring(he2.length + 1), x = Z2.slice(R4);
+            S2 = !f2.trim(), e = e.substring(he2.length + 1), x = Z2.slice(R5);
           }
         }
         let C = n.slice(g, s());
@@ -3186,13 +3210,13 @@ ${f2}`) ? `    ${Z2.replace(/^ {0,3}/, "")}` : f2;
     if (s[4] && n.match(this.rules.other.unicodeAlphaNumeric)) return;
     let d = s[1] || s[3] || "";
     if (!d || !n || p) {
-      let g = [...s[0]].length - 1, k, b, x = g, f2 = 0, S2 = i - l + g, R4 = !this.options.pedantic && !!u.trim() && (!!d || r === "*" && !h), C = r === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+      let g = [...s[0]].length - 1, k, b, x = g, f2 = 0, S2 = i - l + g, R5 = !this.options.pedantic && !!u.trim() && (!!d || r === "*" && !h), C = r === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
       for (C.lastIndex = 0, t = t.slice(-1 * e.length + g); (s = C.exec(t)) !== null; ) {
         if (k = s[1] || s[2] || s[3] || s[4] || s[5] || s[6], !k) continue;
         if (b = [...k].length, s[3] || s[4]) {
           x += b;
           continue;
-        } else if (s[5] || s[6] || R4) {
+        } else if (s[5] || s[6] || R5) {
           if (o && (s[5] || s[6])) break;
           if (S2 % 3 && !((S2 + b) % 3)) {
             f2 += b;
@@ -4219,7 +4243,7 @@ function esc(str) {
 }
 
 // src/raw-html.js
-var words2 = (list2) => new Set(list2.split(" "));
+var words2 = (list3) => new Set(list3.split(" "));
 var NEVER = words2("title textarea style xmp iframe noembed noframes script plaintext link meta base object embed frame frameset template html head body noscript svg math");
 var PHRASING = words2("a abbr b bdi bdo br cite code data del dfn em i img ins kbd mark q rp rt ruby s samp small span strong sub sup time u var wbr");
 var BLOCK = words2("address area article aside audio blockquote button canvas caption col colgroup datalist dd details dialog div dl dt fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 header hgroup hr input label legend li main map menu meter nav ol optgroup option output p picture pre progress search section select slot source summary table tbody td tfoot th thead tr track ul video acronym big center font strike tt");
@@ -6580,7 +6604,7 @@ function Wt(e, n, t) {
   };
 }
 function te2(e, n, t, r, o) {
-  var y2, b, p, E, w2, k, _2, O2, j, R4, I2;
+  var y2, b, p, E, w2, k, _2, O2, j, R5, I2;
   let i = null, s = o;
   typeof r == "boolean" ? (s = r, i = null) : r !== void 0 && (i = r);
   let a3 = e.children(n), l = e.node(n), u = l ? l.borderLeft : void 0, d = l ? l.borderRight : void 0, c2 = {};
@@ -6597,7 +6621,7 @@ function te2(e, n, t, r, o) {
   let g = {}, m2 = false;
   for (let v2 = 0; v2 < h.length; v2++) for (let x = v2 + 1; x < h.length; x++) if (!(!h[v2] || !h[x] || !((y2 = h[v2]) != null && y2.barycenter) || !((b = h[x]) != null && b.barycenter)) && ((p = h[v2]) == null ? void 0 : p.barycenter) === h[x].barycenter) {
     let G2 = (w2 = (E = h[v2]) == null ? void 0 : E.vs[0]) != null ? w2 : "", N2 = (_2 = (k = h[x]) == null ? void 0 : k.vs[0]) != null ? _2 : "", C = e.node(G2), B2 = e.node(N2);
-    if (C.dummy === "edge" && B2.dummy === "edge" && ((O2 = C.edgeObj) == null ? void 0 : O2.v) === ((j = B2.edgeObj) == null ? void 0 : j.v) && ((R4 = C.edgeObj) == null ? void 0 : R4.w) === ((I2 = B2.edgeObj) == null ? void 0 : I2.w)) if (C.edgeLabel.reversed) {
+    if (C.dummy === "edge" && B2.dummy === "edge" && ((O2 = C.edgeObj) == null ? void 0 : O2.v) === ((j = B2.edgeObj) == null ? void 0 : j.v) && ((R5 = C.edgeObj) == null ? void 0 : R5.w) === ((I2 = B2.edgeObj) == null ? void 0 : I2.w)) if (C.edgeLabel.reversed) {
       g[N2] = h[v2], h.splice(v2, 1), v2--;
       break;
     } else g[G2] || (g[G2] = h[x], h.splice(x, 1), x--);
@@ -6996,14 +7020,14 @@ function In(e, n, t) {
       }), In(E, n, t);
       let _2 = Rn(E);
       Cn(_2, n, t, null), Tn2(E, _2);
-      let O2 = 1 / 0, j = 1 / 0, R4 = -1 / 0, I2 = -1 / 0;
+      let O2 = 1 / 0, j = 1 / 0, R5 = -1 / 0, I2 = -1 / 0;
       E.nodes().forEach((G2) => {
         if (G2 === b) return;
         let N2 = E.node(G2);
-        N2 && typeof N2.x == "number" && typeof N2.y == "number" && typeof N2.width == "number" && typeof N2.height == "number" && (O2 = Math.min(O2, N2.x - N2.width / 2), R4 = Math.max(R4, N2.x + N2.width / 2), j = Math.min(j, N2.y - N2.height / 2), I2 = Math.max(I2, N2.y + N2.height / 2));
-      }), (!isFinite(O2) || !isFinite(j) || !isFinite(R4) || !isFinite(I2)) && (O2 = j = 0, R4 = I2 = 0);
-      let v2 = R4 - O2, x = I2 - j;
-      o[b] = { minX: O2, minY: j, maxX: R4, maxY: I2, width: v2, height: x, offsetX: O2, offsetY: j }, p._dagreClusterSubgraph = E;
+        N2 && typeof N2.x == "number" && typeof N2.y == "number" && typeof N2.width == "number" && typeof N2.height == "number" && (O2 = Math.min(O2, N2.x - N2.width / 2), R5 = Math.max(R5, N2.x + N2.width / 2), j = Math.min(j, N2.y - N2.height / 2), I2 = Math.max(I2, N2.y + N2.height / 2));
+      }), (!isFinite(O2) || !isFinite(j) || !isFinite(R5) || !isFinite(I2)) && (O2 = j = 0, R5 = I2 = 0);
+      let v2 = R5 - O2, x = I2 - j;
+      o[b] = { minX: O2, minY: j, maxX: R5, maxY: I2, width: v2, height: x, offsetX: O2, offsetY: j }, p._dagreClusterSubgraph = E;
     }
   });
   let i = [], s = (b) => {
@@ -7056,7 +7080,7 @@ function In(e, n, t) {
     e.hasEdge(E, w2) && e.removeEdge(E, w2);
   }), i.forEach(({ clusterId: b, subgraph: p, bounds: E, removedNodes: w2, removedEdges: k }) => {
     var v2, x;
-    let _2 = e.node(b), O2 = (v2 = _2 == null ? void 0 : _2.x) != null ? v2 : 0, j = (x = _2 == null ? void 0 : _2.y) != null ? x : 0, R4 = (E.minX + E.maxX) / 2, I2 = (E.minY + E.maxY) / 2;
+    let _2 = e.node(b), O2 = (v2 = _2 == null ? void 0 : _2.x) != null ? v2 : 0, j = (x = _2 == null ? void 0 : _2.y) != null ? x : 0, R5 = (E.minX + E.maxX) / 2, I2 = (E.minY + E.maxY) / 2;
     w2.forEach(({ id: G2, node: N2, parent: C }) => {
       e.setNode(G2, N2), C !== void 0 && e.setParent(G2, C);
     }), k.forEach(({ edge: G2, label: N2 }) => {
@@ -7064,21 +7088,21 @@ function In(e, n, t) {
     }), p.nodes().forEach((G2) => {
       if (G2 === b) return;
       let N2 = p.node(G2), C = e.node(G2);
-      C && N2 && typeof N2.x == "number" && typeof N2.y == "number" && (C.x = O2 + (N2.x - R4), C.y = j + (N2.y - I2));
-    }), On2(e, p, O2 - R4, j - I2), delete _2._dagreClusterSubgraph;
+      C && N2 && typeof N2.x == "number" && typeof N2.y == "number" && (C.x = O2 + (N2.x - R5), C.y = j + (N2.y - I2));
+    }), On2(e, p, O2 - R5, j - I2), delete _2._dagreClusterSubgraph;
   }), r.forEach((b) => {
     var w2, k;
     let p = e.node(b), E = o[b];
     if (p && p.rankdir && p._dagreClusterSubgraph && E) {
-      let _2 = p._dagreClusterSubgraph, O2 = (w2 = p.x) != null ? w2 : 0, j = (k = p.y) != null ? k : 0, R4 = (E.minX + E.maxX) / 2, I2 = (E.minY + E.maxY) / 2;
+      let _2 = p._dagreClusterSubgraph, O2 = (w2 = p.x) != null ? w2 : 0, j = (k = p.y) != null ? k : 0, R5 = (E.minX + E.maxX) / 2, I2 = (E.minY + E.maxY) / 2;
       _2.nodes().forEach((v2) => {
         if (v2 === b) return;
         let x = _2.node(v2), G2 = e.node(v2);
         if (G2 && x && typeof x.x == "number" && typeof x.y == "number") {
-          let N2 = x.x - R4, C = x.y - I2;
+          let N2 = x.x - R5, C = x.y - I2;
           G2.x = O2 + N2, G2.y = j + C;
         }
-      }), On2(e, _2, O2 - R4, j - I2), delete p._dagreClusterSubgraph;
+      }), On2(e, _2, O2 - R5, j - I2), delete p._dagreClusterSubgraph;
     }
   });
 }
@@ -8233,9 +8257,9 @@ function checkEnds(entities, written) {
   const replaced = new Set(written.map((rel) => pairKey(rel.from, rel.to)));
   const implied = [...entities.values()].flatMap((entity) => entity.fields.filter((field) => field.ref && !replaced.has(pairKey(entity.name, field.ref))).map((field) => ({ from: entity.name, to: field.ref, line: field.line, state: field.state === "changed" ? void 0 : field.state })));
   for (const rel of [...implied, ...written]) {
-    const ends = [rel.from, rel.to].map((name2) => entities.get(name2));
-    const added = ends.find((e) => e.state === "added");
-    const removed = ends.find((e) => e.state === "removed");
+    const ends2 = [rel.from, rel.to].map((name2) => entities.get(name2));
+    const added = ends2.find((e) => e.state === "added");
+    const removed = ends2.find((e) => e.state === "removed");
     if (rel.state === "added" && removed) {
       throw new ComponentError(`er: the + relationship ${rel.from} to ${rel.to} touches the removed entity ${removed.name}, so it would dangle in the After view. Remove the + or keep ${removed.name}`, rel.line);
     }
@@ -8280,7 +8304,7 @@ function erLineOf(mermaid) {
   return `${from} ${MERMAID_CARDS[left]}--${MERMAID_CARDS[right]} ${to}${text2 ? `: ${text2}` : ""}`;
 }
 function relationships({ entities, written }) {
-  const ends = (...names2) => {
+  const ends2 = (...names2) => {
     const states = names2.map((name2) => entities.get(name2).state);
     return ["removed", "added"].find((s) => states.includes(s));
   };
@@ -8290,11 +8314,11 @@ function relationships({ entities, written }) {
     for (const field of entity.fields) {
       if (!field.ref) continue;
       const own = field.state === "changed" ? null : field.state;
-      implied.push(withState({ from: entity.name, fromCard: "*", to: field.ref, toCard: "1", label: "", line: field.line }, own ?? ends(entity.name, field.ref)));
+      implied.push(withState({ from: entity.name, fromCard: "*", to: field.ref, toCard: "1", label: "", line: field.line }, own ?? ends2(entity.name, field.ref)));
     }
   }
   const replaced = new Set(written.map((rel) => pairKey(rel.from, rel.to)));
-  const lines = written.map((rel) => withState(rel, rel.state ?? ends(rel.from, rel.to) ?? implied.find((x) => pairKey(x.from, x.to) === pairKey(rel.from, rel.to) && x.state)?.state));
+  const lines = written.map((rel) => withState(rel, rel.state ?? ends2(rel.from, rel.to) ?? implied.find((x) => pairKey(x.from, x.to) === pairKey(rel.from, rel.to) && x.state)?.state));
   return [...implied.filter((rel) => !replaced.has(pairKey(rel.from, rel.to))), ...lines];
 }
 var pairKey = (a3, b) => [a3, b].sort().join("\0");
@@ -8420,9 +8444,9 @@ function nodeSvgOf(entity, x, y2, size, step, pageDir) {
 }
 function loopSvg({ rel, a: a3, b, c: c2, away, label }, step, pageDir) {
   const path = `<path class="am-edge" d="${loopPath({ a: a3, b, c: c2 })}"/>`;
-  const ends = `${endMark(a3, { x: a3.x + away.x, y: a3.y + away.y }, rel.fromCard)}${endMark(b, { x: b.x + away.x, y: b.y + away.y }, rel.toCard)}`;
+  const ends2 = `${endMark(a3, { x: a3.x + away.x, y: a3.y + away.y }, rel.fromCard)}${endMark(b, { x: b.x + away.x, y: b.y + away.y }, rel.toCard)}`;
   const text2 = label ? labelSvg(rel.label, label.x, label.y, pageDir) : "";
-  return `<g data-step="${step}"${deltaAttr(rel.state)}>${path}${ends}${text2}</g>`;
+  return `<g data-step="${step}"${deltaAttr(rel.state)}>${path}${ends2}${text2}</g>`;
 }
 function labelWidth2(text2) {
   return measure(text2, EDGE_FS2) + 10;
@@ -8794,17 +8818,17 @@ function legendLayout(names2, maxWidth) {
   }
   return { items, height: y2 + LEGEND_LH + 6, width: Math.max(...items.map((i) => i.x + i.w)) };
 }
-function legendSvg({ items }, left, top2, { rtl, dir }, W7) {
+function legendSvg({ items }, left, top2, { rtl, dir }, W11) {
   return items.map(({ k, name: name2, x, y: y2, w: w2 }) => {
-    const sw = rtl ? W7 - (left + x) - 10 : left + x;
-    return `<rect class="am-ch-sw am-ch-s${k + 1}" x="${f(sw)}" y="${f(top2 + y2 + 2)}" width="10" height="10" rx="2"/>${text("am-ch-leg", rtl ? W7 - (left + x + 16) : left + x + 16, top2 + y2 + 7, name2, dir, ' dominant-baseline="central"')}`;
+    const sw = rtl ? W11 - (left + x) - 10 : left + x;
+    return `<rect class="am-ch-sw am-ch-s${k + 1}" x="${f(sw)}" y="${f(top2 + y2 + 2)}" width="10" height="10" rx="2"/>${text("am-ch-leg", rtl ? W11 - (left + x + 16) : left + x + 16, top2 + y2 + 7, name2, dir, ' dominant-baseline="central"')}`;
   }).join("");
 }
 var stepGroup = (i, cls, title, inner) => `<g data-step="${i}" class="${cls}">${title}${inner}</g>`;
 var squash = (s) => s.replace(/\s/g, "");
 var tooltip = (label, shown2) => squash(label) === squash(shown2) ? "" : `<title>${esc(label)}</title>`;
-function valueAxis(m2, { axisX, width, y: y2, W: W7, X: X3 }) {
-  const left = m2.rtl ? W7 - axisX - width : axisX;
+function valueAxis(m2, { axisX, width, y: y2, W: W11, X: X3 }) {
+  const left = m2.rtl ? W11 - axisX - width : axisX;
   return m2.range.ticks.flatMap((t) => [
     `<line class="${t === 0 ? "am-ch-zero" : "am-ch-grid"}" x1="${f(left)}" y1="${f(y2(t))}" x2="${f(left + width)}" y2="${f(y2(t))}"/>`,
     text("am-ch-tick", X3(axisX - 6), y2(t), m2.tick(t), m2.dir, ' text-anchor="end" dominant-baseline="central"')
@@ -8870,19 +8894,19 @@ function verticalBars(m2) {
   const reach = plan.lines ? 0 : Math.max(...plan.shown.map((l, i) => measure(l, FS4.cat) * COS + FS4.cat * SIN - ((i + 0.5) * slot + PAD3 + tickW + 9)));
   const axisX = PAD3 + Math.max(0, reach) + tickW + 6;
   const legend = legendLayout(m2.names, Math.max(n * slot + tickW, 240));
-  const W7 = Math.ceil(Math.max(axisX + n * slot + PAD3, (legend.width ?? 0) + 2 * PAD3));
+  const W11 = Math.ceil(Math.max(axisX + n * slot + PAD3, (legend.width ?? 0) + 2 * PAD3));
   const plotTop = PAD3 + legend.height + (labels ? 16 : 6);
   const plotBottom = plotTop + PLOT_H;
   const negLabels = labels && range.min < 0;
   const catTop = plotBottom + (negLabels ? 18 : 8);
   const catH = plan.lines ? Math.max(...plan.lines.map((ls) => ls.length)) * LH5 + 4 : Math.max(...plan.shown.map((l) => measure(l, FS4.cat))) * SIN + 12;
   const height = catTop + catH + PAD3;
-  const X3 = mirror(W7, rtl);
-  const rectX = (x, w2) => rtl ? W7 - x - w2 : x;
+  const X3 = mirror(W11, rtl);
+  const rectX = (x, w2) => rtl ? W11 - x - w2 : x;
   const y2 = (v2) => plotTop + (range.max - v2) / (range.max - range.min) * PLOT_H;
   const y0 = y2(0);
-  const body = [legendSvg(legend, PAD3, PAD3, m2, W7)];
-  body.push(...valueAxis(m2, { axisX, width: n * slot, y: y2, W: W7, X: X3 }));
+  const body = [legendSvg(legend, PAD3, PAD3, m2, W11)];
+  body.push(...valueAxis(m2, { axisX, width: n * slot, y: y2, W: W11, X: X3 }));
   for (const [i, row] of rows.entries()) {
     const x0 = axisX + i * slot;
     const cx = x0 + slot / 2;
@@ -8899,7 +8923,7 @@ function verticalBars(m2) {
     const cat = categoryLabel(plan, i, row.label, cx, catTop, { X: X3, rtl, dir });
     body.push(rowGroup(m2, row, i, cat.tip, parts.join("") + cat.svg));
   }
-  return { width: W7, height, body };
+  return { width: W11, height, body };
 }
 function horizontalBars(m2) {
   const { rows, count: count2, range, labels, rtl, dir } = m2;
@@ -8916,14 +8940,14 @@ function horizontalBars(m2) {
   const catX = PAD3 + catW;
   const axisX = Math.max(catX + 8 + before, PAD3 + tickHalf);
   const legend = legendLayout(m2.names, Math.max(catW + PLOT_W, 240));
-  const W7 = Math.ceil(Math.max(axisX + PLOT_W + Math.max(after, tickHalf) + PAD3, (legend.width ?? 0) + 2 * PAD3));
+  const W11 = Math.ceil(Math.max(axisX + PLOT_W + Math.max(after, tickHalf) + PAD3, (legend.width ?? 0) + 2 * PAD3));
   const plotTop = PAD3 + legend.height + 4;
   const plotBottom = plotTop + n * rowH;
   const height = plotBottom + 22 + PAD3;
-  const X3 = mirror(W7, rtl);
+  const X3 = mirror(W11, rtl);
   const x = (v2) => axisX + rel(v2);
   const x0 = x(0);
-  const body = [legendSvg(legend, PAD3, PAD3, m2, W7)];
+  const body = [legendSvg(legend, PAD3, PAD3, m2, W11)];
   for (const t of range.ticks) {
     const line2 = t === 0 ? "am-ch-zero" : "am-ch-grid";
     body.push(`<line class="${line2}" x1="${f(X3(x(t)))}" y1="${f(plotTop)}" x2="${f(X3(x(t)))}" y2="${f(plotBottom)}"/>`);
@@ -8936,7 +8960,7 @@ function horizontalBars(m2) {
       const by = gy + k * (bh + GAP);
       const [from, to] = [Math.min(x0, x(v2)), Math.max(x0, x(v2))];
       const w2 = Math.max(to - from, v2 === 0 ? 0 : 1);
-      const bar = `<rect class="${barClass(m2, row, k)}" x="${f(rtl ? W7 - from - w2 : from)}" y="${f(by)}" width="${f(w2)}" height="${bh}" rx="2"/>`;
+      const bar = `<rect class="${barClass(m2, row, k)}" x="${f(rtl ? W11 - from - w2 : from)}" y="${f(by)}" width="${f(w2)}" height="${bh}" rx="2"/>`;
       if (!labels) return bar;
       const end = v2 >= 0 ? x(v2) + 4 : x(v2) - 4;
       return bar + text("am-ch-val", X3(end), by + bh / 2, m2.tick(v2), dir, ` text-anchor="${v2 >= 0 ? "start" : "end"}" dominant-baseline="central"`);
@@ -8945,7 +8969,7 @@ function horizontalBars(m2) {
     const name2 = lines[i].map((l, j) => text("am-ch-cat", X3(catX), first + j * LH5, l, dir, ' text-anchor="end" dominant-baseline="central"')).join("");
     body.push(rowGroup(m2, row, i, tooltip(row.label, lines[i].join(" ")), parts.join("") + name2));
   }
-  return { width: W7, height, body };
+  return { width: W11, height, body };
 }
 
 // src/components/chart-line.js
@@ -9031,17 +9055,17 @@ function lineChart(m2) {
   const axisX = Math.max(PAD3 + tickW + 6, PAD3 + Math.max(...over2.map((o) => o.left)));
   const plotW = n * slot;
   const legend = legendLayout(m2.names, Math.max(plotW + tickW, 240));
-  const W7 = Math.ceil(Math.max(axisX + plotW + Math.max(PAD3, 2 + Math.max(...over2.map((o) => o.right))), (legend.width ?? 0) + 2 * PAD3));
+  const W11 = Math.ceil(Math.max(axisX + plotW + Math.max(PAD3, 2 + Math.max(...over2.map((o) => o.right))), (legend.width ?? 0) + 2 * PAD3));
   const plotTop = PAD3 + legend.height + (anyLabels ? 18 : 6);
   const plotBottom = plotTop + PLOT_H;
   const catTop = plotBottom + (anyLabels ? 22 : 8);
   const catH = plan.lines ? Math.max(...plan.lines.map((ls) => ls ? ls.length : 0)) * LH5 + 4 : Math.max(...plan.shown.map((l, i) => plan.show[i] ? measure(l, FS4.cat) : 0)) * SIN + 12;
   const height = catTop + catH + PAD3;
-  const X3 = mirror(W7, rtl);
+  const X3 = mirror(W11, rtl);
   const y2 = (v2) => plotTop + (range.max - v2) / (range.max - range.min) * PLOT_H;
   const cx = (i) => axisX + (i + 0.5) * slot;
-  const body = [legendSvg(legend, PAD3, PAD3, m2, W7)];
-  body.push(...valueAxis(m2, { axisX, width: plotW, y: y2, W: W7, X: X3 }));
+  const body = [legendSvg(legend, PAD3, PAD3, m2, W11)];
+  body.push(...valueAxis(m2, { axisX, width: plotW, y: y2, W: W11, X: X3 }));
   for (const [i, row] of rows.entries()) {
     const parts = [];
     if (row.hi) parts.push(`<line class="am-ch-guide" x1="${f(X3(cx(i)))}" y1="${f(plotTop)}" x2="${f(X3(cx(i)))}" y2="${f(plotBottom)}"/>`);
@@ -9060,7 +9084,7 @@ function lineChart(m2) {
     }
     body.push(stepGroup(i, `am-ch-row${row.hi ? " is-hi" : ""}`, tip, parts.join("")));
   }
-  return { width: W7, height, body };
+  return { width: W11, height, body };
 }
 
 // src/components/chart-pie.js
@@ -9089,9 +9113,9 @@ function drawPie(data, { unit = "", dir = "ltr", label }) {
   const legendH = heights.reduce((a3, b) => a3 + b, 0);
   const legendW = SW + labelW + COL_GAP + valueW + (asShares ? 0 : COL_GAP + shareW);
   const H3 = Math.ceil(Math.max(2 * R2, legendH) + 2 * PAD3);
-  const W7 = Math.ceil(PAD3 + 2 * R2 + GAP2 + legendW + PAD3);
+  const W11 = Math.ceil(PAD3 + 2 * R2 + GAP2 + legendW + PAD3);
   const [cx, cy] = [PAD3 + R2, H3 / 2];
-  const X3 = mirror(W7, rtl);
+  const X3 = mirror(W11, rtl);
   const lx = PAD3 + 2 * R2 + GAP2;
   const [valueX, shareX] = [lx + SW + labelW + COL_GAP + valueW, lx + legendW];
   const at3 = (r, turn2) => `${f(X3(cx + r * Math.sin(turn2 * TAU)))},${f(cy - r * Math.cos(turn2 * TAU))}`;
@@ -9106,7 +9130,7 @@ function drawPie(data, { unit = "", dir = "ltr", label }) {
     const first = mid2 - (lines[i].length - 1) * LH5 / 2;
     const parts = [];
     if (span > 0) parts.push(`<path class="am-ch-slice am-ch-s${i + 1}" d="${slice(turn, turn + span)}"/>`);
-    parts.push(`<rect class="am-ch-sw am-ch-s${i + 1}" x="${f(rtl ? W7 - lx - 10 : lx)}" y="${f(mid2 - 5)}" width="10" height="10" rx="2"/>`);
+    parts.push(`<rect class="am-ch-sw am-ch-s${i + 1}" x="${f(rtl ? W11 - lx - 10 : lx)}" y="${f(mid2 - 5)}" width="10" height="10" rx="2"/>`);
     parts.push(...lines[i].map((l, j) => text("am-ch-leg", X3(lx + SW), first + j * LH5, l, dir, ' dominant-baseline="central"')));
     parts.push(text("am-ch-num", X3(valueX), mid2, shown2[i], dir, ' text-anchor="end" dominant-baseline="central"'));
     if (!asShares) parts.push(text("am-ch-num", X3(shareX), mid2, shares[i], dir, ' text-anchor="end" dominant-baseline="central"'));
@@ -9115,7 +9139,7 @@ function drawPie(data, { unit = "", dir = "ltr", label }) {
     top2 += heights[i];
   }
   if (!asShares) body.push(totalText(fmt(total), unit, X3(cx), cy, dir));
-  return `${svgOpen(W7, H3, label, dir)}${body.join("")}</svg>`;
+  return `${svgOpen(W11, H3, label, dir)}${body.join("")}</svg>`;
 }
 function totalText(total, unit, x, y2, dir) {
   const room = 1.6 * R_IN;
@@ -9414,6 +9438,7 @@ var STAGE_SIZE = 11.5;
 var dataflow_default = {
   name: "dataflow",
   summary: "Sources into a hub, out along lanes, into one aggregate",
+  roles: ["source", "lane", "state"],
   render(text2, { args = {}, uid = "fx", dir = "ltr", warn } = {}) {
     const rows = readRows(text2, ["source", "lane", "state"], "dataflow");
     const sources = take(rows.filter((r) => r.role === "source"), 8, "sources", warn);
@@ -9514,14 +9539,151 @@ var dataflow_default = {
   }
 };
 
+// src/figures/gauge.js
+var W4 = 800;
+var TOP2 = 30;
+var ROW3 = 96;
+var X0 = 110;
+var X1 = W4 - 110;
+var TRACK_Y = 34;
+var TRACK_H = 12;
+var round6 = (n) => Math.round(n * 10) / 10;
+function readZones(raw, template) {
+  if (!raw) return [];
+  const parts = String(raw).split(",").map((s) => Number(s.trim()));
+  if (!parts.length || parts.length > 2 || parts.some((n) => !Number.isFinite(n) || n <= 0)) {
+    throw new ComponentError(`${template}: zones= takes one or two numbers above 0, as zones="80, 150"`, 0);
+  }
+  if (parts.length === 2 && !(parts[0] < parts[1])) {
+    throw new ComponentError(`${template}: zones= needs the numbers in order, as zones="80, 150"`, 0);
+  }
+  return parts;
+}
+var gauge_default = {
+  name: "gauge",
+  summary: "Numbers against a scale, with a threshold zone",
+  roles: ["gauge"],
+  render(text2, { args = {}, dir = "ltr", warn } = {}) {
+    const rows = readRows(text2, ["gauge"], "gauge");
+    const gauges = take(rows, 4, "gauges", warn);
+    if (!gauges.length) throw new ComponentError('gauge needs at least one "gauge:" line', 0);
+    const unit = arg(args, "unit", "gauge");
+    const foot = arg(args, "note", "gauge");
+    const t = typographer(W4, dir === "rtl");
+    const [edge, anim, label] = [[], [], []];
+    const span = X1 - X0;
+    const parsed = gauges.map((row) => {
+      const name2 = row.fields[0] ?? "";
+      if (!name2) throw new ComponentError("a gauge: line needs a name before its value", row.line);
+      if (row.fields.length < 2) throw new ComponentError(`gauge "${name2}" needs a value after the name`, row.line);
+      const value = numberIn(row.fields[1], Number.MAX_SAFE_INTEGER, `gauge "${name2}"`, row.line);
+      const max = row.fields[2] === void 0 ? 100 : numberIn(row.fields[2], Number.MAX_SAFE_INTEGER, `gauge "${name2}" max`, row.line);
+      if (max <= 0) throw new ComponentError(`gauge "${name2}" max must be above 0`, row.line);
+      if (value > max) throw new ComponentError(`gauge "${name2}" is ${value}, above its max ${max}: raise max=`, row.line);
+      return { name: name2, value, max, line: row.line };
+    });
+    const zones = readZones(arg(args, "zones", "gauge"), "gauge");
+    const unitLabel = (n) => `${round6(n)}${unit ? ` ${unit}` : ""}`;
+    parsed.forEach(({ name: name2, value, max }, i) => {
+      const y2 = TOP2 + i * ROW3;
+      const at3 = (v2) => X0 + span * v2 / max;
+      const end = at3(value);
+      label.push(t.at(X0, y2 + 6, fit(name2, span, 13.5, { bold: true }), { size: 13.5, anchor: "start", cls: "am-fx-row", bold: true }));
+      label.push(t.at(X1, y2 + 6, unitLabel(value), { size: 15, anchor: "end", cls: "am-fx-row", bold: true, mono: true }));
+      edge.push(`<rect class="am-fx-track" x="${X0}" y="${y2 + TRACK_Y}" width="${span}" height="${TRACK_H}" rx="${TRACK_H / 2}"/>`);
+      const inside = zones.filter((z3) => z3 < max);
+      const bands = [];
+      if (inside.length === 1) bands.push([0, inside[0], "ok"], [inside[0], max, "err"]);
+      if (inside.length === 2) bands.push([0, inside[0], "ok"], [inside[0], inside[1], "warn"], [inside[1], max, "err"]);
+      for (const [from, to, kind2] of bands) {
+        edge.push(`<rect class="am-fx-zone am-fx-zone--${kind2}" x="${round6(at3(from))}" y="${y2 + TRACK_Y}" width="${round6((to - from) / max * span)}" height="${TRACK_H}" rx="${TRACK_H / 2}"/>`);
+      }
+      const width = round6(end - X0);
+      if (width > 0) {
+        edge.push(`<rect class="am-fx-fill am-fx-s1${dir === "rtl" ? " am-fx-fill--rev" : ""}" x="${X0}" y="${y2 + TRACK_Y}" width="${width}" height="${TRACK_H}" rx="${TRACK_H / 2}" style="--am-fx-delay:${round6(i * 0.18)}s"/>`);
+      }
+      edge.push(`<line class="am-fx-needle" x1="${round6(end)}" y1="${y2 + TRACK_Y - 7}" x2="${round6(end)}" y2="${y2 + TRACK_Y + TRACK_H + 7}"/>`);
+      anim.push(flash(end, y2 + TRACK_Y + TRACK_H / 2, 3.4, { delay: round6(0.8 + i * 0.18), period: 9, series: 1 }));
+      label.push(t.at(X0, y2 + TRACK_Y + TRACK_H + 22, unitLabel(0), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
+      label.push(t.at(X1, y2 + TRACK_Y + TRACK_H + 22, unitLabel(max), { size: 10.5, anchor: "end", cls: "am-fx-sub", mono: true }));
+      for (const threshold of inside) {
+        label.push(t.at(at3(threshold), y2 + TRACK_Y + TRACK_H + 22, unitLabel(threshold), { size: 10.5, cls: "am-fx-sub", mono: true }));
+      }
+    });
+    const height = TOP2 + parsed.length * ROW3 + (foot ? 22 : 0);
+    if (foot) label.push(t.at(X0, height - 6, fit(foot, span, 10.5), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
+    const svg = `${svgOpen(W4, height, parsed.map((g) => `${g.name} ${unitLabel(g.value)}/${unitLabel(g.max)}`).join("; "), dir)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W4, H: height, boxes: t.boxes };
+  }
+};
+
+// src/figures/matrix.js
+var W5 = 820;
+var X02 = 32;
+var TOP3 = 42;
+var CELL_H = 40;
+var CELL_GAP = 8;
+var MIN_CELL_W = 58;
+var round7 = (n) => Math.round(n * 10) / 10;
+var matrix_default = {
+  name: "matrix",
+  summary: "Rows and columns of numbers, washed by value",
+  roles: ["col", "row"],
+  render(text2, { args = {}, dir = "ltr", warn } = {}) {
+    const rows = readRows(text2, ["col", "row"], "matrix");
+    const cols = take(rows.filter((r) => r.role === "col"), 6, "columns", warn).map((r) => {
+      const name2 = r.fields.join(" ").trim();
+      if (!name2) throw new ComponentError("a col: line needs a name", r.line);
+      return { name: name2, line: r.line };
+    });
+    const lines = take(rows.filter((r) => r.role === "row"), 10, "rows", warn);
+    if (!cols.length) throw new ComponentError('matrix needs at least one "col:" line', 0);
+    if (!lines.length) throw new ComponentError('matrix needs at least one "row:" line', 0);
+    const foot = arg(args, "note", "matrix");
+    const labelW = Math.min(200, Math.max(120, Math.max(...lines.map((r) => measure(r.fields[0] ?? "", 13))) + 32));
+    const gridX = X02 + labelW;
+    const gridW = W5 - gridX - X02;
+    const cellW = (gridW - CELL_GAP * (cols.length - 1)) / cols.length;
+    if (cellW < MIN_CELL_W) throw new ComponentError(`matrix: ${cols.length} columns leave ${Math.round(cellW)} units each; use at most 6`, 0);
+    const t = typographer(W5, dir === "rtl");
+    const [edge, label] = [[], []];
+    cols.forEach((col, c2) => {
+      const cx = gridX + c2 * (cellW + CELL_GAP) + cellW / 2;
+      label.push(t.at(cx, 24, fit(col.name, cellW - 6, 11.5), { size: 11.5, cls: "am-fx-axis-name" }));
+    });
+    lines.forEach((row, r) => {
+      const name2 = row.fields[0] ?? "";
+      if (!name2) throw new ComponentError("a row: line needs a name before its values", row.line);
+      const values = row.fields.slice(1).filter((f2) => f2 !== "");
+      if (values.length !== cols.length) {
+        const cap = values.length > 6 ? " (a matrix draws at most 6 columns)" : "";
+        throw new ComponentError(`row "${name2}" has ${values.length} values for ${cols.length} columns: write one per column${cap}`, row.line);
+      }
+      const y2 = TOP3 + r * (CELL_H + CELL_GAP);
+      label.push(t.at(X02, y2 + CELL_H / 2 + 4.5, fit(name2, labelW - 16, 13, { bold: true }), { size: 13, anchor: "start", cls: "am-fx-row", bold: true }));
+      values.forEach((raw, c2) => {
+        const value = numberIn(raw, 100, `cell "${name2} \xB7 ${cols[c2].name}"`, row.line);
+        const x = gridX + c2 * (cellW + CELL_GAP);
+        edge.push(`<rect class="am-fx-cell" x="${round7(x)}" y="${round7(y2)}" width="${round7(cellW)}" height="${CELL_H}" rx="6" fill-opacity="${round7(0.05 + value / 100 * 0.8)}" style="--am-fx-delay:${round7((r + c2) * 0.06)}s"/>`);
+        label.push(t.at(x + cellW / 2, y2 + CELL_H / 2 + 4.5, String(value), { size: 12, cls: value > 55 ? "am-fx-cell-on" : "am-fx-cell-off", mono: true }));
+      });
+    });
+    const height = TOP3 + lines.length * (CELL_H + CELL_GAP) - CELL_GAP + (foot ? 26 : 8);
+    if (foot) label.push(t.at(X02, height - 8, fit(foot, W5 - 2 * X02, 10.5), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
+    const svg = `${svgOpen(W5, height, `${cols.map((c2) => c2.name).join(", ")}; ${lines.length} rows`, dir)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W5, H: height, boxes: t.boxes };
+  }
+};
+
 // src/figures/orbit.js
-var W4 = 860;
+var W6 = 860;
 var CX = 430;
 var CY = 232;
 var RING = [{ rx: 214, ry: 118, r: 27 }, { rx: 308, ry: 172, r: 24 }];
 var orbit_default = {
   name: "orbit",
   summary: "One center with an inner and an outer ring",
+  roles: ["ring1", "ring2"],
   render(text2, { args = {}, uid = "fx", dir = "ltr", warn } = {}) {
     const rows = readRows(text2, ["ring1", "ring2"], "orbit");
     const inner = take(rows.filter((r) => r.role === "ring1"), 4, "inner satellites", warn, 1);
@@ -9530,7 +9692,7 @@ var orbit_default = {
     const center = arg(args, "center", "orbit");
     if (!center) throw new ComponentError('orbit needs the center: write ```figure orbit center="Model"', 0);
     const note2 = arg(args, "center-note", "orbit");
-    const t = typographer(W4, dir === "rtl");
+    const t = typographer(W6, dir === "rtl");
     const [edge, anim, node, label] = [[], [], [], []];
     const longest = Math.max(...RING.map((g) => ellipse(CX, CY, g.rx, g.ry).len));
     node.push(`<circle class="am-fx-halo" cx="${CX}" cy="${CY}" r="210" fill="url(#${uid}-halo)"/>`);
@@ -9565,28 +9727,120 @@ var orbit_default = {
         }
         const lx = x + cos * gap;
         const anchor = cos > 0 ? "start" : "end";
-        const room = (cos > 0 ? W4 - lx : lx) - 6;
+        const room = (cos > 0 ? W6 - lx : lx) - 6;
         label.push(t.at(lx, y2 + 4, fit(name2, room, 12.5), { size: 12.5, anchor, cls: "am-fx-name" }));
         if (sub) label.push(t.at(lx, y2 + 18, fit(sub, room, 10.5), { size: 10.5, anchor, cls: "am-fx-sub", mono: true }));
       });
     });
     node.push(roundNode(t, CX, CY, 52, { label: center, sub: note2, size: 16, subSize: 10.5 }));
     anim.push(pulse(CX, CY, 52, { delay: 0.4, period: 4.6, grow: 1.65, series: 1, width: 1.6 }));
-    const svg = `${svgOpen(W4, 470, `${center}: ${[...inner, ...outer].map((s) => s.fields[0]).join(", ")}`, dir)}${defs(uid)}${dots(uid, W4, 470)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
-    return { svg, W: W4, H: 470, boxes: t.boxes };
+    const svg = `${svgOpen(W6, 470, `${center}: ${[...inner, ...outer].map((s) => s.fields[0]).join(", ")}`, dir)}${defs(uid)}${dots(uid, W6, 470)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W6, H: 470, boxes: t.boxes };
+  }
+};
+
+// src/figures/quadrant.js
+var W7 = 760;
+var LEFT = 200;
+var RIGHT = 600;
+var BOTTOM = 462;
+var TOP4 = 58;
+var R3 = 5.5;
+var SIZE = 12;
+var GAP3 = 4;
+var round8 = (n) => Math.round(n * 10) / 10;
+function ends(value) {
+  const text2 = value === void 0 || value === true ? "" : String(value).trim();
+  if (!text2) return null;
+  const parts = text2.split(/→|->/).map((s) => s.trim()).filter(Boolean);
+  return parts.length ? { low: parts[0], high: parts[1] ?? "" } : null;
+}
+var quadrant_default = {
+  name: "quadrant",
+  summary: "Options placed on two axes",
+  roles: ["item"],
+  render(text2, { args = {}, dir = "ltr", warn } = {}) {
+    const rows = readRows(text2, ["item"], "quadrant");
+    const items = take(rows, 10, "items", warn);
+    if (!items.length) throw new ComponentError('quadrant needs at least one "item:" line', 0);
+    const xs = ends(args?.x);
+    const ys = ends(args?.y);
+    if (!xs || !ys) throw new ComponentError('quadrant needs both x="low \u2192 high" and y="low \u2192 high"', 0);
+    const parsed = items.map((row) => {
+      const [name2, rawX, rawY] = row.fields;
+      if (!name2 || rawX === void 0 || rawY === void 0) {
+        throw new ComponentError("an item: line is `item: name | x | y`, both from 0 to 100", row.line);
+      }
+      return {
+        name: name2,
+        x: numberIn(rawX, 100, `item "${name2}" x`, row.line),
+        y: numberIn(rawY, 100, `item "${name2}" y`, row.line),
+        line: row.line
+      };
+    });
+    const rtl = dir === "rtl";
+    const mx = (v2) => rtl ? W7 - v2 : v2;
+    const px = (v2) => LEFT + (RIGHT - LEFT) * v2 / 100;
+    const py = (v2) => BOTTOM - (BOTTOM - TOP4) * v2 / 100;
+    const t = typographer(W7, dir === "rtl");
+    const [edge, anim, label] = [[], [], []];
+    const boxAt = (cx, cy, str, size, anchor) => {
+      const w2 = measure(str, size);
+      const x0 = anchor === "start" ? cx : anchor === "end" ? cx - w2 : cx - w2 / 2;
+      return { x0, x1: x0 + w2, y0: cy - size * 0.86, y1: cy + size * 0.3 };
+    };
+    const taken = [];
+    const write = (cx, cy, str, size, anchor, cls) => {
+      taken.push(boxAt(cx, cy, str, size, anchor));
+      label.push(t.at(cx, cy, str, { size, anchor, cls }));
+    };
+    const mid2 = mx(px(50));
+    edge.push(edgeDraw(`M${mx(LEFT)},${py(50)} L${mx(RIGHT)},${py(50)}`, { delay: 0 }));
+    edge.push(edgeDraw(`M${mid2},${BOTTOM} L${mid2},${TOP4}`, { delay: 0.15 }));
+    edge.push(`<path class="am-fx-arrow" d="M${mx(RIGHT - 9)},${py(50) - 4.5} L${mx(RIGHT)},${py(50)} L${mx(RIGHT - 9)},${py(50) + 4.5}"/>`);
+    edge.push(`<path class="am-fx-arrow" d="M${mid2 - 4.5},${TOP4 + 9} L${mid2},${TOP4} L${mid2 + 4.5},${TOP4 + 9}"/>`);
+    const along = py(50) + 24;
+    write(LEFT + 8, along, fit(xs.low, 140, SIZE), SIZE, "start", "am-fx-sub");
+    write(RIGHT - 8, along, fit(xs.high || xs.low, 140, SIZE), SIZE, "end", "am-fx-axis-name");
+    write(LEFT - 16, BOTTOM, fit(ys.low, 150, SIZE), SIZE, "end", "am-fx-sub");
+    if (ys.high) write(LEFT - 16, TOP4 + 4, fit(ys.high, 150, SIZE), SIZE, "end", "am-fx-axis-name");
+    parsed.forEach(({ name: name2, x, y: y2 }, i) => {
+      const cx = px(x);
+      const cy = py(y2);
+      edge.push(`<circle class="am-fx-pt am-fx-s${i % 4 + 1}" cx="${mx(cx)}" cy="${round8(cy)}" r="${R3}"/>`);
+      anim.push(pulse(mx(cx), cy, R3, { delay: round8(0.4 + i * 0.12), period: 5.5, grow: 1.9, series: i % 4 + 1, width: 1.2 }));
+      const room = Math.min(200, Math.max(60, Math.min(W7 - cx - 16, cx - 16)));
+      const str = fit(name2, room, SIZE);
+      const sides = [
+        { dx: R3 + 8, dy: -2, anchor: "start" },
+        { dx: -R3 - 8, dy: -2, anchor: "end" },
+        { dx: 0, dy: -R3 - 10, anchor: "middle" },
+        { dx: 0, dy: R3 + 17, anchor: "middle" },
+        { dx: R3 + 8, dy: 15, anchor: "start" },
+        { dx: -R3 - 8, dy: 15, anchor: "end" }
+      ];
+      const clear = (box) => box.x0 >= 6 && box.x1 <= W7 - 6 && !taken.some((o) => box.x0 < o.x1 + GAP3 && box.x1 > o.x0 - GAP3 && box.y0 < o.y1 + 2 && box.y1 > o.y0 - 2);
+      const side = sides.find((s) => clear(boxAt(cx + s.dx, cy + s.dy, str, SIZE, s.anchor))) ?? sides[0];
+      write(cx + side.dx, cy + side.dy, str, SIZE, side.anchor, "am-fx-name");
+    });
+    const height = BOTTOM + 44;
+    const summary = `${xs.low} \u2192 ${xs.high}; ${ys.low} \u2192 ${ys.high}: ${parsed.map((p) => `${p.name} (${p.x}, ${p.y})`).join(", ")}`;
+    const svg = `${svgOpen(W7, height, summary, dir)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W7, H: height, boxes: t.boxes };
   }
 };
 
 // src/figures/radar.js
-var W5 = 660;
+var W8 = 660;
 var CX2 = 330;
 var CY2 = 236;
-var R3 = 148;
+var R4 = 148;
 var AXIS_SIZE = 12;
 var LEGEND_Y = 448;
 var radar_default = {
   name: "radar",
   summary: "Two or three options across 3 to 8 axes",
+  roles: ["series"],
   render(text2, { args = {}, uid = "fx", dir = "ltr", warn } = {}) {
     const rows = readRows(text2, ["series"], "radar");
     const series = take(rows, 3, "series", warn, 1);
@@ -9601,11 +9855,11 @@ var radar_default = {
       }
       values.forEach((v2) => numberIn(v2, 100, `series "${s.fields[0]}"`, s.line));
     }
-    const t = typographer(W5, dir === "rtl");
+    const t = typographer(W8, dir === "rtl");
     const [edge, anim, node, label] = [[], [], [], []];
     const k = axes.length;
     const angle = (i) => -Math.PI / 2 + i * 2 * Math.PI / k;
-    const point = (i, v2) => [CX2 + R3 * v2 * Math.cos(angle(i)), CY2 + R3 * v2 * Math.sin(angle(i))];
+    const point = (i, v2) => [CX2 + R4 * v2 * Math.cos(angle(i)), CY2 + R4 * v2 * Math.sin(angle(i))];
     for (const v2 of [0.25, 0.5, 0.75, 1]) {
       const points = axes.map((_2, i) => point(i, v2).map((n) => Math.round(n * 10) / 10).join(",")).join(" ");
       edge.push(`<polygon class="am-fx-ring" points="${points}"/>`);
@@ -9616,7 +9870,7 @@ var radar_default = {
       const cos = Math.cos(angle(i));
       const [lx, ly] = point(i, 1.18);
       const anchor = Math.abs(cos) < 0.2 ? "middle" : cos > 0 ? "start" : "end";
-      const room = anchor === "middle" ? 150 : anchor === "start" ? W5 - lx - 6 : lx - 6;
+      const room = anchor === "middle" ? 150 : anchor === "start" ? W8 - lx - 6 : lx - 6;
       label.push(t.at(lx, ly + 4, fit(name2, room, AXIS_SIZE), { size: AXIS_SIZE, anchor, cls: "am-fx-axis-name" }));
     });
     series.forEach((s, si) => {
@@ -9632,23 +9886,137 @@ var radar_default = {
       label.push(t.at(lx + 16, LEGEND_Y, fit(s.fields[0] ?? "", 148, 11.5), { size: 11.5, anchor: "start", cls: "am-fx-legend" }));
     });
     const sweep = spin(
-      `<path class="am-fx-sweep" d="${sector(CX2, CY2, R3 - 3, -0.42, 0).d}" fill="url(#${uid}-sweep)"/><line class="am-fx-sweep-line" x1="${CX2}" y1="${CY2}" x2="${CX2 + R3 - 3}" y2="${CY2}"/>`,
+      `<path class="am-fx-sweep" d="${sector(CX2, CY2, R4 - 3, -0.42, 0).d}" fill="url(#${uid}-sweep)"/><line class="am-fx-sweep-line" x1="${CX2}" y1="${CY2}" x2="${CX2 + R4 - 3}" y2="${CY2}"/>`,
       { cx: CX2, cy: CY2, period: 5.2 }
     );
     anim.push(sweep);
     anim.push(`<circle class="am-fx-hub" cx="${CX2}" cy="${CY2}" r="3.2"/>`);
-    const svg = `${svgOpen(W5, 480, `${axes.join(", ")}: ${series.map((s) => s.fields[0]).join(" vs ")}`, dir)}${defs(uid, { halo: false, sweep: true })}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
-    return { svg, W: W5, H: 480, boxes: t.boxes };
+    const svg = `${svgOpen(W8, 480, `${axes.join(", ")}: ${series.map((s) => s.fields[0]).join(" vs ")}`, dir)}${defs(uid, { halo: false, sweep: true })}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W8, H: 480, boxes: t.boxes };
+  }
+};
+
+// src/figures/sankey.js
+var W9 = 900;
+var X03 = 132;
+var X12 = W9 - 132;
+var TOP5 = 56;
+var PLOT_H2 = 300;
+var BAR_W2 = 14;
+var NODE_GAP = 30;
+var round9 = (n) => Math.round(n * 10) / 10;
+function layers(nodes, flows) {
+  const preds = new Map(nodes.map((n) => [n, []]));
+  for (const f2 of flows) preds.get(f2.to).push(f2.from);
+  const depth = /* @__PURE__ */ new Map();
+  const visit = (n, path) => {
+    const known = depth.get(n);
+    if (known !== void 0) return known;
+    if (path.has(n)) throw new ComponentError(`sankey: ${[...path, n].join(" \u2192 ")} is a cycle; a flow has one direction`, 0);
+    path.add(n);
+    const list3 = preds.get(n);
+    const d = list3.length ? Math.max(...list3.map((p) => visit(p, path))) + 1 : 0;
+    path.delete(n);
+    depth.set(n, d);
+    return d;
+  };
+  for (const n of nodes) visit(n, /* @__PURE__ */ new Set());
+  const width = Math.max(...depth.values()) + 1;
+  if (width > 4) throw new ComponentError(`sankey: ${width} columns; keep the flows to 4 stages`, 0);
+  return { depth, width };
+}
+var sankey_default = {
+  name: "sankey",
+  summary: "Flows whose width is the amount",
+  roles: ["flow"],
+  render(text2, { args = {}, dir = "ltr", warn } = {}) {
+    const rtl = dir === "rtl";
+    const rows = readRows(text2, ["flow"], "sankey");
+    const lines = take(rows, 10, "flows", warn);
+    if (!lines.length) throw new ComponentError('sankey needs at least one "flow:" line', 0);
+    const unit = arg(args, "unit", "sankey");
+    const foot = arg(args, "note", "sankey");
+    const flows = lines.map((row) => {
+      const [from, to, raw] = row.fields;
+      if (!from || !to || raw === void 0) throw new ComponentError("a flow: line is `flow: from | to | amount`", row.line);
+      if (from === to) throw new ComponentError(`sankey: "${from}" flows into itself`, row.line);
+      const value = numberIn(raw, Number.MAX_SAFE_INTEGER, `flow ${from} \u2192 ${to}`, row.line);
+      if (value <= 0) throw new ComponentError(`flow ${from} \u2192 ${to} needs an amount above 0`, row.line);
+      return { from, to, value, line: row.line };
+    });
+    const nodes = [];
+    for (const f2 of flows) for (const n of [f2.from, f2.to]) if (!nodes.includes(n)) nodes.push(n);
+    if (nodes.length > 12) throw new ComponentError(`sankey: ${nodes.length} names; keep the drawing to 12`, 0);
+    const { depth, width } = layers(nodes, flows);
+    const out = new Map(nodes.map((n) => [n, 0]));
+    const into = new Map(nodes.map((n) => [n, 0]));
+    for (const f2 of flows) {
+      out.set(f2.from, out.get(f2.from) + f2.value);
+      into.set(f2.to, into.get(f2.to) + f2.value);
+    }
+    const size = new Map(nodes.map((n) => [n, Math.max(out.get(n), into.get(n))]));
+    const perColumn = (d) => nodes.filter((n) => depth.get(n) === d);
+    const maxGaps = NODE_GAP * Math.max(...Array.from({ length: width }, (_2, d) => perColumn(d).length - 1));
+    const maxSum = Math.max(...Array.from({ length: width }, (_2, d) => perColumn(d).reduce((a3, n) => a3 + size.get(n), 0)));
+    const scale = (PLOT_H2 - maxGaps) / maxSum;
+    const cx = (d) => width === 1 ? (X03 + X12) / 2 : X03 + (X12 - X03) * d / (width - 1);
+    const mx = (v2) => rtl ? W9 - v2 : v2;
+    const t = typographer(W9, dir === "rtl");
+    const [edge, anim, label] = [[], [], []];
+    const placed = /* @__PURE__ */ new Map();
+    for (let d = 0; d < width; d++) {
+      const column = perColumn(d);
+      const used = column.reduce((a3, n) => a3 + size.get(n) * scale, 0) + NODE_GAP * (column.length - 1);
+      let y2 = TOP5 + (PLOT_H2 - used) / 2;
+      for (const n of column) {
+        const h = Math.max(6, size.get(n) * scale);
+        placed.set(n, { x: cx(d), y: y2, h, d });
+        y2 += h + NODE_GAP;
+      }
+    }
+    const cursorOut = new Map(nodes.map((n) => [n, placed.get(n).y]));
+    const cursorIn = new Map(nodes.map((n) => [n, placed.get(n).y]));
+    flows.forEach((f2, i) => {
+      const a3 = placed.get(f2.from);
+      const b = placed.get(f2.to);
+      const h = f2.value * scale;
+      const y0 = cursorOut.get(f2.from);
+      cursorOut.set(f2.from, y0 + h);
+      const y1 = cursorIn.get(f2.to);
+      cursorIn.set(f2.to, y1 + h);
+      const ax = mx(a3.x + BAR_W2 / 2);
+      const bx = mx(b.x - BAR_W2 / 2);
+      const bend = (bx - ax) * 0.5;
+      const series = i % 4 + 1;
+      edge.push(`<path class="am-fx-band-link am-fx-s${series}" d="M${round9(ax)},${round9(y0)} C${round9(ax + bend)},${round9(y0)} ${round9(bx - bend)},${round9(y1)} ${round9(bx)},${round9(y1)} L${round9(bx)},${round9(y1 + h)} C${round9(bx - bend)},${round9(y1 + h)} ${round9(ax + bend)},${round9(y0 + h)} ${round9(ax)},${round9(y0 + h)} Z"/>`);
+      const centre = cubic([ax, y0 + h / 2], [ax + bend, y0 + h / 2], [bx - bend, y1 + h / 2], [bx, y1 + h / 2]);
+      anim.push(comet(centre.d, centre.len, { delay: round9(0.2 + i * 0.12), time: 3.4, tail: 80, series, width: 2 }));
+    });
+    nodes.forEach((n) => {
+      const p = placed.get(n);
+      edge.push(`<rect class="am-fx-bar" x="${round9(mx(p.x) - BAR_W2 / 2)}" y="${round9(p.y)}" width="${BAR_W2}" height="${round9(p.h)}" rx="3"/>`);
+      if (p.d === 0) {
+        label.push(t.at(p.x - BAR_W2 / 2 - 10, p.y + p.h / 2 + 4, fit(n, X03 - 30, 12.5), { size: 12.5, anchor: "end", cls: "am-fx-row" }));
+      } else if (p.d === width - 1) {
+        label.push(t.at(p.x + BAR_W2 / 2 + 10, p.y + p.h / 2 + 4, fit(n, W9 - X12 - 30, 12.5), { size: 12.5, anchor: "start", cls: "am-fx-row" }));
+      } else {
+        label.push(t.at(p.x, p.y - 6, fit(n, 130, 11.5), { size: 11.5, cls: "am-fx-axis-name" }));
+      }
+    });
+    const height = TOP5 + PLOT_H2 + (foot ? 34 : 12);
+    if (foot) label.push(t.at(X03, height - 10, fit(foot, X12 - X03, 10.5), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
+    const svg = `${svgOpen(W9, height, flows.map((f2) => `${f2.from} \u2192 ${f2.to}: ${round9(f2.value)}${unit}`).join(", "), dir)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W9, H: height, boxes: t.boxes };
   }
 };
 
 // src/figures/stack.js
-var W6 = 800;
-var X0 = 176;
+var W10 = 800;
+var X04 = 176;
 var BAND_W = 500;
 var BAND_H = 76;
-var GAP3 = 58;
-var TOP2 = 44;
+var GAP4 = 58;
+var TOP6 = 44;
 var CHIP_H = 28;
 var CHIP_PAD = 26;
 var CHIP_GAP = 10;
@@ -9656,28 +10024,29 @@ var NAME_ROOM = 150;
 var stack_default = {
   name: "stack",
   summary: "Stacked layers with channels between them",
+  roles: ["layer"],
   render(text2, { args = {}, uid = "fx", dir = "ltr", warn } = {}) {
     const rows = readRows(text2, ["layer"], "stack");
-    const layers = take(rows, 5, "layers", warn, 1);
-    if (layers.length < 2) throw new ComponentError('stack needs at least 2 "layer:" lines', 0);
-    const H3 = TOP2 + layers.length * (BAND_H + GAP3) - GAP3 + 12;
-    const t = typographer(W6, dir === "rtl");
+    const layers2 = take(rows, 5, "layers", warn, 1);
+    if (layers2.length < 2) throw new ComponentError('stack needs at least 2 "layer:" lines', 0);
+    const H3 = TOP6 + layers2.length * (BAND_H + GAP4) - GAP4 + 12;
+    const t = typographer(W10, dir === "rtl");
     const [edge, anim, node, label] = [[], [], [], []];
-    const bandY = (i) => TOP2 + i * (BAND_H + GAP3);
-    layers.forEach((layer, i) => {
+    const bandY = (i) => TOP6 + i * (BAND_H + GAP4);
+    layers2.forEach((layer, i) => {
       const y2 = bandY(i);
       const name2 = layer.fields[0] ?? "";
       if (!name2) throw new ComponentError("a layer: line needs a name before its chips", layer.line);
       const chips = layer.fields.slice(1).filter(Boolean);
       if (!chips.length) throw new ComponentError(`layer "${name2}" needs at least one chip after the name`, layer.line);
-      edge.push(`<rect class="am-fx-band" x="${X0}" y="${y2}" width="${BAND_W}" height="${BAND_H}" rx="10"/>`);
-      label.push(t.at(X0 - 18, y2 + BAND_H / 2 + 4, fit(name2, NAME_ROOM, 13.5, { bold: true }), { size: 13.5, anchor: "end", cls: "am-fx-row", bold: true }));
-      let x = X0 + 22;
+      edge.push(`<rect class="am-fx-band" x="${X04}" y="${y2}" width="${BAND_W}" height="${BAND_H}" rx="10"/>`);
+      label.push(t.at(X04 - 18, y2 + BAND_H / 2 + 4, fit(name2, NAME_ROOM, 13.5, { bold: true }), { size: 13.5, anchor: "end", cls: "am-fx-row", bold: true }));
+      let x = X04 + 22;
       const drawn = [];
       for (const chip of chips) {
         const text3 = fit(chip, 132, 11.5);
         const width = measure(text3, 11.5) + CHIP_PAD;
-        if (x + width > X0 + BAND_W - 22) break;
+        if (x + width > X04 + BAND_W - 22) break;
         drawn.push({ chip, text: text3, width, x });
         x += width + CHIP_GAP;
       }
@@ -9690,11 +10059,11 @@ var stack_default = {
         anim.push(pulse(cx0 + width / 2, y2 + BAND_H / 2, 15, { delay: 0.5 + i * 0.45 + k * 0.25, period: 6, grow: 0.6, series: i % 3 + 1, width: 1 }));
       });
     });
-    for (let i = 0; i < layers.length - 1; i++) {
+    for (let i = 0; i < layers2.length - 1; i++) {
       const top2 = bandY(i) + BAND_H;
       const bottom = bandY(i + 1);
       [0.3, 0.64].forEach((fraction, k) => {
-        const x = X0 + BAND_W * fraction;
+        const x = X04 + BAND_W * fraction;
         const up = line([x, bottom], [x, top2]);
         edge.push(edgeDraw(up.d, { delay: 0.1 + i * 0.08, cls: "am-fx-edge--dim" }));
         anim.push(comet(up.d, up.len, { delay: 0.3 + i * 0.4 + k * 0.25, time: 2.6, series: (i + k) % 3 + 1, width: 2, tail: 34 }));
@@ -9703,29 +10072,45 @@ var stack_default = {
       });
     }
     const foot = arg(args, "note", "stack");
-    if (foot) label.push(t.at(X0, H3 - 10, fit(foot, BAND_W + NAME_ROOM + 18, 10.5), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
+    if (foot) label.push(t.at(X04, H3 - 10, fit(foot, BAND_W + NAME_ROOM + 18, 10.5), { size: 10.5, anchor: "start", cls: "am-fx-sub", mono: true }));
     const height = foot ? H3 + 18 : H3;
-    const svg = `${svgOpen(W6, height, layers.map((l) => l.fields[0]).join(" / "), dir)}${defs(uid, { halo: false })}${dots(uid, W6, height)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
-    return { svg, W: W6, H: height, boxes: t.boxes };
+    const svg = `${svgOpen(W10, height, layers2.map((l) => l.fields[0]).join(" / "), dir)}${defs(uid, { halo: false })}${dots(uid, W10, height)}<g class="am-fx-layer-edge">${edge.join("")}</g><g class="am-fx-layer-anim">${anim.join("")}</g><g class="am-fx-layer-node">${node.join("")}</g><g class="am-fx-layer-label">${label.join("")}</g></svg>`;
+    return { svg, W: W10, H: height, boxes: t.boxes };
   }
 };
 
 // src/figures/index.js
-var ALL2 = [dataflow_default, orbit_default, radar_default, stack_default];
+var ALL2 = [dataflow_default, gauge_default, matrix_default, orbit_default, quadrant_default, radar_default, sankey_default, stack_default];
 var FIGURES = new Map(ALL2.map((f2) => [f2.name, f2]));
 
 // src/components/figure.js
+var ALL3 = [...FIGURES.values()];
+var BY_NAME = new Map(ALL3.flatMap((f2) => f2.roles.map((role) => [role, f2])));
+var list = ALL3.map((f2) => f2.name).join("|");
+function rolesIn(text2) {
+  const seen = /* @__PURE__ */ new Set();
+  for (const { text: body } of contentLines(text2 ?? "")) {
+    const at3 = body.indexOf(":");
+    if (at3 > 0) seen.add(body.slice(0, at3).trim().toLowerCase());
+  }
+  return [...seen].filter((role) => BY_NAME.has(role));
+}
 var figure_default = {
   name: "figure",
-  summary: "Dataflow, orbit, radar or stacked layers, with motion",
-  syntax: `\`\`\`figure dataflow|orbit|radar|stack [key="value"]
-role: field | field | field
+  summary: "Dataflow, gauge, matrix, orbit, quadrant, radar, sankey or stack, with motion",
+  syntax: `\`\`\`figure [dataflow|gauge|matrix|orbit|quadrant|radar|sankey|stack] [key="value"]
+role: field | field
 \`\`\`
-- The first word is the template. The panel heading is the figure title, so there is no title=.
+- The first word is the template, and it can be left out: the roles name it (col/row \u2192 matrix, flow \u2192 sankey, gauge \u2192 gauge, item \u2192 quadrant, layer \u2192 stack, ring1/ring2 \u2192 orbit, series \u2192 radar, source/lane \u2192 dataflow).
+- The panel heading is the figure title, so there is no title=.
 - dataflow: \`source: name\` (1 to 8), \`lane: name | stage | stage\` (1 to 4 lanes, 1 to 3 stages each), \`state: file | file\` (optional, up to 6); arguments hub="Gateway" (required), hub-note="one key", sink="Aggregate" (required).
 - orbit: \`ring1: name | note\` (2 to 4), \`ring2: name | note\` (2 to 6); arguments center="Model" (required), center-note="reasons".
 - radar: argument axes="Speed, Cost, Durability" (3 to 8 names), then \`series: name | 0-100 | 0-100\` (1 to 3 series, one value per axis, in axis order).
 - stack: \`layer: name | chip | chip\` (2 to 5 layers, 2 to 6 chips each); argument note="a rule under the drawing".
+- matrix: \`col: name\` (1 to 6) then \`row: name | 0-100 | 0-100\` (1 to 10 rows, one value per column, in column order); argument note="a rule under the drawing".
+- sankey: \`flow: from | to | amount\` (1 to 10 flows, 12 names, 4 columns); arguments unit="GB", note="a rule under the drawing". The columns come from the flows and a cycle is an error.
+- gauge: \`gauge: name | value | max\` (1 to 4 rows, max defaults to 100); arguments unit="ms", zones="80, 150" (one threshold marks where the number turns bad, two add a warn band) and note="a rule under the drawing".
+- quadrant: \`item: name | 0-100 | 0-100\` (1 to 10 items); arguments x="cheap \u2192 dear" and y="slow \u2192 fast" (both required).
 - The lines set the size of the drawing: an extra source moves the hub and the lanes instead of overlapping them, and text that does not fit is shortened. A figure draws at most its capacity of lines and warns about the rest.
 - The drawing is complete without motion: with motion: off, in print and for a reader who asks for reduced motion, you get the static picture. With motion: subtle or expressive, light runs along the edges.
 - A figure is a page drawing; a video draft reports it as an error.`,
@@ -9735,10 +10120,18 @@ role: field | field | field
   render(text2, { args = "", dir = "ltr", uid = () => "am1", warn } = {}) {
     const attrs = parseAttrs(args);
     const words3 = Object.keys(attrs).filter((k) => attrs[k] === true);
-    const [template, ...rest] = words3;
-    if (!template) throw new ComponentError(`figure needs a template: write \`\`\`figure ${[...FIGURES.keys()].join("|")}`, 0);
+    const [word, ...rest] = words3;
+    let template = word && word !== "auto" ? word : "";
+    if (!template) {
+      const families = [...new Set(rolesIn(text2).map((role) => BY_NAME.get(role)))];
+      if (families.length === 1) template = families[0].name;
+      else if (families.length > 1) {
+        throw new ComponentError(`figure: the lines mix ${families.map((f2) => f2.name).join(" and ")} (${families.map((f2) => f2.roles.join("/")).join(" vs ")}); write the template: \`\`\`figure ${families[0].name}`, 0);
+      } else throw new ComponentError(`figure needs a template: ${list}, or lines whose roles name one`, 0);
+    }
+    if (word === "auto" && rest.length) throw new ComponentError(`figure auto takes no template word, only settings`, 0);
     const figure2 = FIGURES.get(template);
-    if (!figure2) throw new ComponentError(`figure has no "${template}" template; use ${[...FIGURES.keys()].join(", ")}`, 0);
+    if (!figure2) throw new ComponentError(`figure has no "${template}" template; use ${ALL3.map((f2) => f2.name).join(", ")}`, 0);
     if (rest.length) throw new ComponentError(`figure ${template} has no "${rest[0]}" option; its settings go as key="value"`, 0);
     const { svg } = figure2.render(text2, { args: attrs, dir, uid: uid(), warn });
     return `<figure class="am-diagram am-fx">${svg}</figure>`;
@@ -9746,8 +10139,8 @@ role: field | field | field
 };
 
 // src/components/index.js
-var ALL3 = [callout_default, kv_default, timeline_default, annot_default, tree_default, limits_default, chart_default, sequence_default, flow_default, state_default, er_default, class_default, api_default, ask_default, figure_default];
-var COMPONENTS = new Map(ALL3.map((c2) => [c2.name, c2]));
+var ALL4 = [callout_default, kv_default, timeline_default, annot_default, tree_default, limits_default, chart_default, sequence_default, flow_default, state_default, er_default, class_default, api_default, ask_default, figure_default];
+var COMPONENTS = new Map(ALL4.map((c2) => [c2.name, c2]));
 var RAW_LANGS = /* @__PURE__ */ new Set(["html", "svg"]);
 
 // src/parse.js
@@ -10180,19 +10573,19 @@ var videoSel = (t) => `html[data-video][data-theme="${t.name}"]`;
 var scoped = (css, sel) => css.replace(/&/g, sel);
 var languageFontCss = () => fontLanguages().map((l) => block(langSelector(l, "html", "[data-theme][data-mode]"), { "--font-sans": l.fonts.sans }));
 var ownLanguageFont = (t) => fontLanguages().map((l) => block(langSelector(l, "html", `[data-theme="${t.name}"][data-mode]`), { "--font-sans": t.tokens.common["--font-sans"] }));
-function pageCss(list2 = themes("page"), { diff = false, delta = false, rtl = false, math: math2 = false, chart = false, figure: figure2 = false, motion = false, table = false, update: update2 = false, closeAfter = false, fonts = true, scale = 1 } = {}) {
-  const decorations = list2.filter((t) => t.css).map((t) => scoped(t.css, pageSel(t)));
-  const fontFaces = fonts ? [...new Set(list2.map((t) => t.font).filter((f2) => f2 && FONT_CSS[f2]))].map((f2) => FONT_CSS[f2]) : [];
-  const ownFonts = list2.filter((t) => t.ownFont).flatMap(ownLanguageFont);
-  return [list2.map((t) => tokenCss(pageSel(t), t.tokens, t.mode)).join("\n\n"), ...languageFontCss(), ...ownFonts, typeScaleCss(), ...scale === 1 ? [] : [`html { --am-scale: ${scale}; }`], BASE_CSS, ...math2 ? [MATH_CSS] : [], ...chart ? [CHART_CSS] : [], ...figure2 ? [FIGURE_CSS] : [], ...motion ? [MOTION_CSS] : [], ...table ? [TABLE_CSS] : [], ...diff ? [DIFF_CSS] : [], ...delta ? [DELTA_CSS] : [], ...update2 ? [UPDATE_CSS] : [], ...closeAfter ? [CLOSE_AFTER_CSS] : [], ...rtl ? [RTL_CSS] : [], ...fontFaces, ...decorations].join("\n\n");
+function pageCss(list3 = themes("page"), { diff = false, delta = false, rtl = false, math: math2 = false, chart = false, figure: figure2 = false, motion = false, table = false, update: update2 = false, closeAfter = false, fonts = true, scale = 1 } = {}) {
+  const decorations = list3.filter((t) => t.css).map((t) => scoped(t.css, pageSel(t)));
+  const fontFaces = fonts ? [...new Set(list3.map((t) => t.font).filter((f2) => f2 && FONT_CSS[f2]))].map((f2) => FONT_CSS[f2]) : [];
+  const ownFonts = list3.filter((t) => t.ownFont).flatMap(ownLanguageFont);
+  return [list3.map((t) => tokenCss(pageSel(t), t.tokens, t.mode)).join("\n\n"), ...languageFontCss(), ...ownFonts, typeScaleCss(), ...scale === 1 ? [] : [`html { --am-scale: ${scale}; }`], BASE_CSS, ...math2 ? [MATH_CSS] : [], ...chart ? [CHART_CSS] : [], ...figure2 ? [FIGURE_CSS] : [], ...motion ? [MOTION_CSS] : [], ...table ? [TABLE_CSS] : [], ...diff ? [DIFF_CSS] : [], ...delta ? [DELTA_CSS] : [], ...update2 ? [UPDATE_CSS] : [], ...closeAfter ? [CLOSE_AFTER_CSS] : [], ...rtl ? [RTL_CSS] : [], ...fontFaces, ...decorations].join("\n\n");
 }
-function videoCss(list2 = themes("video"), { diff = false, delta = false, rtl = false, chart = false } = {}) {
-  const parts = list2.filter((t) => t.video).flatMap((t) => [
+function videoCss(list3 = themes("video"), { diff = false, delta = false, rtl = false, chart = false } = {}) {
+  const parts = list3.filter((t) => t.video).flatMap((t) => [
     t.video.tokens ? tokenCss(videoSel(t), t.video.tokens, t.mode) : "",
     t.video.css ? scoped(t.video.css, videoSel(t)) : "",
     rtl && t.video.rtlCss ? scoped(t.video.rtlCss, videoSel(t)) : ""
   ]).filter(Boolean);
-  return [pageCss(list2.filter((t) => t.scope.includes("page")), { diff, delta, rtl, chart, fonts: false }), VIDEO_CSS, ...parts].join("\n\n");
+  return [pageCss(list3.filter((t) => t.scope.includes("page")), { diff, delta, rtl, chart, fonts: false }), VIDEO_CSS, ...parts].join("\n\n");
 }
 
 // src/lint/wordlist.en.js
@@ -10375,10 +10768,10 @@ function lintMarkdown(text2, startLine, out, family) {
       cells.forEach((c2) => checkUnit(clean(c2.replace(/^(ok|warn|✓|✔|⚠)(\s|$)/, "")), line2, "descriptive", out, family));
       return;
     }
-    const list2 = t.match(/^(?:([-*+])|(\d+)[.)])\s+(.*)$/);
-    if (list2) {
+    const list3 = t.match(/^(?:([-*+])|(\d+)[.)])\s+(.*)$/);
+    if (list3) {
       flush();
-      checkUnit(clean(list2[3]), line2, list2[2] ? "procedural" : "descriptive", out, family);
+      checkUnit(clean(list3[3]), line2, list3[2] ? "procedural" : "descriptive", out, family);
       return;
     }
     const body = clean(t.replace(/^>\s*/, ""));
@@ -11637,7 +12030,7 @@ async function cmdThemeMarket(action, target, opts, ctx) {
   const net = { timeoutMs: ctx.io?.catalogTimeoutMs };
   if (net.timeoutMs === void 0) delete net.timeoutMs;
   if (action === "add") return add(target, opts, ctx, net);
-  if (action === "list") return list(opts, ctx, net);
+  if (action === "list") return list2(opts, ctx, net);
   if (action === "update") return update(target, ctx, net);
   return removeTheme(target, ctx);
 }
@@ -11706,7 +12099,7 @@ function sourceOf(home, name2, installed) {
   if (!installed[name2]) return { source: "local", version: "-" };
   return { source: isUnchanged(home, name2, installed) ? "catalog" : "catalog, edited", version: installed[name2].version };
 }
-async function list(opts, { print, fail, env }, net) {
+async function list2(opts, { print, fail, env }, net) {
   const home = amHome(env);
   print("Built-in themes:");
   for (const t of BUILTIN.list("page")) print(`  ${t.name.padEnd(11)}${t.summary}`);
@@ -11914,23 +12307,23 @@ function buildTimeline(video, durations) {
     const dur = durations[k++];
     const start = t;
     t += dur + TIMING.gap;
-    return { text: b.text, focus: b.focus, start: round6(start), end: round6(start + dur) };
+    return { text: b.text, focus: b.focus, start: round10(start), end: round10(start + dur) };
   });
   const titleBeats = lay(video.introBeats);
   if (!titleBeats.length) t = TIMING.title;
-  const title = { start: 0, end: round6(t), beats: titleBeats };
+  const title = { start: 0, end: round10(t), beats: titleBeats };
   const scenes = video.scenes.map((s) => {
     const start = t;
     t += TIMING.transition;
     const beats = lay(s.beats);
     t += TIMING.tail - TIMING.gap;
-    return { id: s.id, title: s.title, start: round6(start), end: round6(t), beats };
+    return { id: s.id, title: s.title, start: round10(start), end: round10(t), beats };
   });
   t += TIMING.outro;
-  return { duration: round6(t), title, scenes };
+  return { duration: round10(t), title, scenes };
 }
 var allBeats = (video) => [...video.introBeats, ...video.scenes.flatMap((s) => s.beats)];
-var round6 = (x) => Math.round(x * 1e3) / 1e3;
+var round10 = (x) => Math.round(x * 1e3) / 1e3;
 
 // src/video/tts.js
 import { spawn, spawnSync as spawnSync2 } from "node:child_process";
@@ -12636,9 +13029,9 @@ var CHROME_PATHS = {
   linux: ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "microsoft-edge"]
 };
 function chromePaths(platform = process.platform, env = process.env) {
-  const list2 = [...CHROME_PATHS[platform] ?? CHROME_PATHS.linux];
-  if (platform === "win32" && env.LOCALAPPDATA) list2.push(`${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`);
-  return list2;
+  const list3 = [...CHROME_PATHS[platform] ?? CHROME_PATHS.linux];
+  if (platform === "win32" && env.LOCALAPPDATA) list3.push(`${env.LOCALAPPDATA}\\Google\\Chrome\\Application\\chrome.exe`);
+  return list3;
 }
 function findChrome(env = process.env, platform = process.platform) {
   const custom = env.AM_CHROME || env.CHROME_PATH;

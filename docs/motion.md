@@ -3,8 +3,9 @@
 Design and implementation plan for `motion`, the layer that makes the drawings on a page move: the light that travels along an
 edge, the pulse that marks the node it reached, the line that draws itself in.
 
-Status: implemented on branch `feat/page-motion` (target 0.6.0). The two stylesheets, the primitives, the four templates, the
-`motion` key and the two test files below are in this change; the P2 items in §10 are not.
+Status: implemented on branch `feat/page-motion` (target 0.6.0). The two stylesheets, the primitives, the eight templates, the
+`motion` key, the inference that picks a template from the roles, and the two test files below are in this change; P0, P1 and P2 of
+§10 shipped, P3 did not.
 
 ---
 
@@ -170,7 +171,7 @@ Every template reads the same line grammar: `role: field | field | field`, and t
 arguments as `key="value"` pairs (`parseAttrs` in `src/attrs.js`, the same helper `chart` uses). The model writes names and numbers;
 it never writes a coordinate, a width or a color.
 
-The four templates of this version:
+The eight templates of this version:
 
 | Template | Information shape | Data it takes |
 |---|---|---|
@@ -178,6 +179,10 @@ The four templates of this version:
 | `orbit` | one center, an inner ring of what it can reach, an outer ring of the boundary | `center=`, `center-note=`, `ring1:` (2–4), `ring2:` (2–6), each `label \| note` |
 | `radar` | one option against another across 3–8 axes | `axes="a, b, c"`, `series:` (1–3, name + one value per axis, 0–100) |
 | `stack` | layers with channels between them | `layer:` (2–5, name + 2–6 chips) |
+| `gauge` | a number against its scale, with the zones that qualify it | `gauge:` (1–4, name + value + max, max defaults to 100); `unit=`, `zones="80, 150"`, `note=` |
+| `matrix` | rows against columns, one number in each cell | `col:` (1–6), `row:` (1–10, name + one 0–100 value per column); `note=` |
+| `sankey` | flows whose width is the amount | `flow:` (1–10, from + to + amount); `unit=`, `note=`; the columns come from the graph |
+| `quadrant` | options placed on two axes | `item:` (1–10, name + x + y, both 0–100); `x="low → high"`, `y="low → high"`, both required |
 
 Each template computes its own canvas: the height follows the number of rows, the hub sits at the middle of its column of sources,
 the lane spacing follows the lane count, the ring angles divide the circle evenly. Passing 5 sources instead of 8 gives a shorter
@@ -191,22 +196,34 @@ than drawn over itself.
 ### 5.4 Layer 3 — registry and selection
 
 ```
-src/figures/index.js     registry: name → { summary, args, render }
+src/figures/index.js     registry: name → { summary, roles, args, render }
 src/figures/parse.js     the line grammar, shared
-src/figures/dataflow.js  one file per template, ~120–200 lines
+src/figures/scene.js     the chrome the templates share: defs, dot grid, round node
+src/figures/curve.js     the edge maths: line, cubic, its length in drawing units
+src/figures/dataflow.js  one file per template, ~100–200 lines
 src/figures/orbit.js
 src/figures/radar.js
 src/figures/stack.js
-src/components/figure.js the component: template dispatch, error messages, wrapper
+src/figures/gauge.js
+src/figures/matrix.js
+src/figures/sankey.js
+src/figures/quadrant.js
+src/components/figure.js the component: template dispatch, inference, error messages, wrapper
 ```
 
 `src/components/figure.js` is deliberately thin: it validates the template name, calls `FIGURES.get(name).render(rows, opts)`, and
 returns `<figure class="am-diagram am-fx">…</figure>`. Everything that can be wrong with the data is reported by the template
 with its line number, through `ComponentError`, like every other component.
 
-Automatic selection (picking a template from the shape of the data, with no template name in the draft) is **not** in this version:
-a wrong guess draws the wrong thing and the reader cannot tell it is a guess. It is the natural next step once four templates have
-been used by real drafts (see §10).
+Automatic selection is in, and it is one rule rather than a guess: **no two templates read the same role**, so the roles in the
+body name the template. `source:` and `lane:` are a dataflow, `ring1:` is an orbit, `series:` is a radar, `layer:` a stack,
+`col:`/`row:` a matrix, `flow:` a sankey, `gauge:` a gauge, `item:` a quadrant. A draft can leave the word out (`figure` with no
+name), and it can keep `figure auto` as an explicit marker of the same thing. Two families in one body is an error that names both,
+not a guess: a draft that mixes `ring1:` and `flow:` lines is a mistake, and the message says which template it read first.
+
+The guess-free part matters: the inference never invents data, it only picks the template whose grammar the body already speaks, and
+every failure after that (a missing `hub=`, a cycle, a row with the wrong number of values) is still reported by the template with
+the line that caused it.
 
 ### 5.5 Files
 
@@ -231,7 +248,7 @@ been used by real drafts (see §10).
 | `skills/answer-me-with-html/SKILL.md` | one line in the component list |
 | `test/components-figure.test.js`, `test/motion.test.js` | new |
 
-## 6. What the four templates look like
+## 6. What the templates look like
 
 Sizes are the shipped templates, measured on the built `src/figures/*.js` with `measure()`-grade text metrics: a small figure and a
 figure at capacity.
@@ -242,6 +259,10 @@ figure at capacity.
 | `orbit` | 2 inner, 2 outer — 860×470, **5.4 KB** | 4 inner, 6 outer — 860×470, **7.5 KB** | 12 → 12 |
 | `radar` | 3 axes, 2 series — 660×480, **2.4 KB** | 8 axes, 3 series — 660×480, **5.0 KB** | 0 → 0 |
 | `stack` | 3 layers, 6 chips — 800×400, **6.0 KB** | 5 layers, 30 chips, a note — 800×686, **17.2 KB** | 12 → 24 |
+| `gauge` | 2 rows — 800×222, **3.2 KB** | 4 rows, zones, a note — 800×436, **4.8 KB** | 0 → 0 (fills and flashes) |
+| `matrix` | 3 × 3 — 820×186, **2.7 KB** | 10 rows × 6 columns — 820×540, **14.7 KB** | 0 → 0 (60 cells arrive) |
+| `sankey` | 3 flows, 3 columns — 900×368, **3.1 KB** | 10 flows, 4 columns — 900×390, **9.5 KB** | 9 → 30 |
+| `quadrant` | 3 items — 760×506, **1.8 KB** | 10 items — 760×506, **3.9 KB** | 0 → 0 (12 pulses) |
 
 **dataflow** — sources stack on the left; each one curves into the hub; the hub fans out to the lanes; each lane is a track with a
 stop per stage, and the stop flashes as the light passes; the lanes curve into the aggregate, which flashes on arrival; the files
@@ -257,6 +278,21 @@ gradient edge. No light tails at all: a radar has one moving part.
 
 **stack** — bands with chips inside; two channels between each pair of layers, light running upward; an optional footnote line for
 the rule ("a call may go down only one level").
+
+**gauge** — a track per number, the zones that qualify it drawn under the fill, the fill grown to the value once, and a needle on the
+exact number. A zone a row never reaches is not drawn: a 60 ms budget under 80/150 thresholds stays a plain track, which is the
+honest picture of a number that is nowhere near the line.
+
+**matrix** — a cell per row and column, washed by its value and carrying its own number, so the wash is emphasis and never the only
+way to read the table. The cells arrive along the diagonal, one after the next, which needs no legend to read as "from the top left".
+
+**sankey** — bands between columns, the width of a band is the amount, and the columns come from the graph: a node sits one column
+right of its farthest source, so `A→B`, `B→C`, `A→C` draws as three columns with nobody writing a stage. A cycle is an error — there
+is no left-to-right order for it, and drawing one would be a lie.
+
+**quadrant** — a 2×2 place with each axis named at its two ends (`x="cheap → dear"`); a dot per option at the numbers it was given, a
+pulse at each dot, and labels that take the first side clear of every label already placed, axis names included. A scatter is the one
+shape whose labels the data can collide, so the placement is a loop, not a constant.
 
 ## 7. Motion budget
 
@@ -275,9 +311,10 @@ typical answer page (two sources, two lanes) holds 30. That is why the templates
 the paint cost of a page bounded, and it is enforced by the template, not by the model. `motion: subtle` and `expressive` do not
 change the count, only the timing.
 
-Measured on a page with four figures (85 animated elements, 48 light tails, 1280 px wide, headless Chromium): over three seconds
-the frame time is 16.7 ms at the median and 16.8 ms at the 95th percentile — 60 fps, with the paint of the tails on the main
-thread. No `will-change` anywhere: 85 promoted layers would cost more memory than the repaint costs time.
+Measured on a page with all eight figures (117 animated elements, 60 light tails, 1280 px wide, headless Chromium): over three
+seconds the frame time is 16.7 ms at the median, 16.8 ms at the 95th percentile and 16.8 ms at the worst frame — a locked 60 fps,
+with the paint of the tails on the main thread. No `will-change` anywhere: a hundred promoted layers would cost more memory than
+the repaint costs time.
 
 Rules the templates follow:
 
@@ -335,7 +372,7 @@ Rules the templates follow:
 |---|---|---|
 | P0 — **in this change** | primitives + `motion.css` + a chart that lifts in as one | no new syntax; existing snapshots change only in the `<style>` block and the root tag |
 | P1 — **in this change** | `figure` with 4 templates + DSL + docs | a draft with a figure renders, prints and exports correctly |
-| P2 — not yet | `orbit`/`radar`/`stack` polish, more figures (`timeline`, `sankey`, `matrix`, `gauge`), auto-selection | after real drafts use the four templates |
+| P2 — **in this change** | four more figures (`gauge`, `matrix`, `sankey`, `quadrant`) and selection from the roles; `timeline` was dropped because the `timeline` component already draws it, and a decision page had no drawing at all | every template passes the same three invariants (inside the canvas, no overlap, mirrored on a right-to-left page) |
 | P3 | scene spec: a small JSON of nodes/edges/groups the compiler lays out | only if P2 shows templates do not cover real drafts |
 
 Versioning: `motion` and `figure` are additive. A page made by 0.5.x renders identically under 0.6.0 with `motion: off`; the only
@@ -362,7 +399,9 @@ A page made with `motion: subtle` that contains one `figure dataflow`:
 4. shows no motion at all when the reader asks for reduced motion;
 5. is mirrored and readable on a `dir="rtl"` page;
 6. passes `npm test`, and its drawing has zero overlapping labels and zero marks outside the viewBox;
-7. renders in the same wall time as today within 5 ms.
+7. renders in the same wall time as today within 5 ms;
+8. and the same holds for the other seven templates: each one is rendered in the test suite at a small size, two odd shapes and a
+   dense one, in both reading directions, with the canvas and overlap invariants checked on the boxes the typographer recorded.
 
 ## 13. Open questions
 
@@ -372,3 +411,5 @@ A page made with `motion: subtle` that contains one `figure dataflow`:
   panel heading only, as with `chart`.
 - Is `expressive` worth a third value, or is it a slider (`--am-fx-phase`) that no one sets? The proposal is to ship it as a name
   and keep the variable internal.
+- With inference shipped, should the template word become required again if real drafts guess wrong? The inference is safe while no
+  two templates share a role, and `figure dataflow` still works, so the word is a choice rather than a risk.

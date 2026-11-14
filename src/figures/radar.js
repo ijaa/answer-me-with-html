@@ -20,6 +20,7 @@ const LEGEND_Y = 448;
 export default {
   name: 'radar',
   summary: 'Two or three options across 3 to 8 axes',
+  roles: ['series'],
 
   render(text, { args = {}, uid = 'fx', dir = 'ltr', warn } = {}) {
     const rows = readRows(text, ['series'], 'radar');

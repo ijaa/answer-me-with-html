@@ -53,6 +53,27 @@
 .am-fx .am-fx-sweep-line { stroke: var(--am-fx-3); stroke-width: 1; opacity: 0.6; }
 .am-fx .am-fx-hub { fill: var(--am-fx-3); }
 
+/* ── a gauge: a track, the zones that qualify it, the fill that reaches the number, and a needle on the exact value ── */
+.am-fx .am-fx-zone--ok { fill: var(--ok, #10844f); fill-opacity: 0.16; }
+.am-fx .am-fx-zone--warn { fill: var(--warn, #a8620a); fill-opacity: 0.2; }
+.am-fx .am-fx-zone--err { fill: var(--err, #c8392b); fill-opacity: 0.14; }
+.am-fx .am-fx-fill { fill: var(--am-fx-1); transform-box: fill-box; transform-origin: left center; }
+.am-fx .am-fx-fill--rev { transform-origin: right center; }
+.am-fx .am-fx-needle { stroke: var(--ink, #16181d); stroke-width: 1.6; stroke-linecap: round; }
+
+/* ── a matrix: the wash is the value, so it is an attribute of the cell and the color is still a token ── */
+.am-fx .am-fx-cell { fill: var(--am-fx-1); }
+.am-fx .am-fx-cell-on { font-size: 12px; fill: var(--bg, #f6f6f3); }
+.am-fx .am-fx-cell-off { font-size: 12px; fill: var(--ink, #16181d); }
+
+/* ── a sankey: a band is a flow, a bar is its end in a column ── */
+.am-fx .am-fx-band-link { fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.22; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-opacity: 0.3; stroke-width: 1; }
+.am-fx .am-fx-bar { fill: var(--ink, #16181d); }
+
+/* ── a quadrant: a point, and the head of an axis ── */
+.am-fx .am-fx-pt { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }
+.am-fx .am-fx-arrow { fill: var(--am-fx-hair); }
+
 /* ── text: a size and a color for each role, overriding the diagram defaults ── */
 .am-fx .am-fx-name { font-size: 12.5px; fill: var(--ink, #16181d); }
 .am-fx .am-fx-row { font-size: 13.5px; fill: var(--ink, #16181d); }

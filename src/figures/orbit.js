@@ -17,6 +17,7 @@ const RING = [{ rx: 214, ry: 118, r: 27 }, { rx: 308, ry: 172, r: 24 }];
 export default {
   name: 'orbit',
   summary: 'One center with an inner and an outer ring',
+  roles: ['ring1', 'ring2'],
 
   render(text, { args = {}, uid = 'fx', dir = 'ltr', warn } = {}) {
     const rows = readRows(text, ['ring1', 'ring2'], 'orbit');

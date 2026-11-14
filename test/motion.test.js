@@ -7,6 +7,7 @@ import { COMPONENTS } from '../src/components/index.js';
 import { CHOICES, ParseError } from '../src/parse.js';
 import { CONFIG_KEYS } from '../src/config.js';
 import { MOTION_CSS } from '../src/assets.js';
+import { FIGURES } from '../src/figures/index.js';
 
 const defaults = { theme: 'blueprint', mode: 'light', style: 'off', motion: 'subtle' };
 const page = (body, overrides = {}, options = {}) => renderDoc(`---\ntitle: T\n---\n\n${body}\n`, overrides, defaults, options).html;
@@ -94,7 +95,10 @@ test('figure: the fence is listed, and the summary says what it draws', () => {
   const figure = COMPONENTS.get('figure');
   assert.equal(figure.name, 'figure');
   assert.match(figure.summary, /Dataflow/);
-  assert.match(figure.syntax, /dataflow\|orbit\|radar\|stack/);
+  assert.match(figure.syntax, /dataflow\|gauge\|matrix\|orbit\|quadrant\|radar\|sankey\|stack/);
+  // The template word is optional: the roles name the template, so a draft costs one token less per drawing.
+  assert.match(figure.syntax, /the roles name it/);
+  assert.deepEqual([...FIGURES.keys()].sort(), ['dataflow', 'gauge', 'matrix', 'orbit', 'quadrant', 'radar', 'sankey', 'stack']);
 });
 
 test('figure: detection is by class, so a page with a figure carries figure.css and a chart does not', () => {
@@ -108,4 +112,23 @@ test('figure: detection is by class, so a page with a figure carries figure.css 
 test('motion: the two levels differ only by the phase variable, never by a second set of rules', () => {
   assert.equal((MOTION_CSS.match(/@keyframes am-fx-travel/g) ?? []).length, 1);
   assert.match(MOTION_CSS, /html\[data-motion="expressive"\] \{ --am-fx-phase: 0\.82; \}/);
+});
+
+test('motion: the second wave of templates animates through the same two primitives', () => {
+  const gauge = page('```figure gauge\ngauge: boot | 96 | 200\n```');
+  assert.match(gauge, /@keyframes am-fx-grow/);
+  assert.match(gauge, /class="am-fx-fill/);
+  const matrix = page('```figure\ncol: a\nrow: r | 12\n```');
+  assert.match(matrix, /class="am-fx-cell"/);
+  // Both are one-shot arrivals, so all three gates cancel them as well as the looping ones.
+  for (const gate of [/@media print[\s\S]*?am-fx-fill[\s\S]*?animation: none !important/, /prefers-reduced-motion[\s\S]*?am-fx-cell[\s\S]*?animation: none !important/, /html\[data-video\][\s\S]*?am-fx-fill[\s\S]*?animation: none !important/]) {
+    assert.match(MOTION_CSS, gate);
+  }
+});
+
+test('motion: with motion: off the new templates keep their still picture and ship no keyframes', () => {
+  const html = page('```figure gauge\ngauge: boot | 96 | 200\n```', { motion: 'off' });
+  assert.doesNotMatch(html, /am-fx-grow/);
+  assert.match(html, /class="am-fx-fill/);
+  assert.match(html, /class="am-fx-needle/);
 });
