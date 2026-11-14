@@ -13,6 +13,7 @@ subtitle: 一句话说明
 file: tcp-handshake    # 文件名；标题里没有或只有很少 ASCII 字母时使用（见输出）
 cols: 3                # sheet 的列数（整数）
 outline: right         # doc 且有 3 个及以上章节时，大纲条在正文的哪一侧：left 或 right（默认 right）
+motion: subtle         # 图和图表动不动：off（静止）| subtle（默认）| expressive（更快）
 source: RFC 9293       # 其他任意字段会显示在标题下方
 ---
 导语，写一两句核心结论。
@@ -219,6 +220,31 @@ Postgres    | 28  | 95
 - 单元格个数不对、值不是数字、饼图里有负数或全是 0、超出上限，都会报错，并带上行号和正确的例子。
 
 完整写法：`am help chart`。
+
+## 图
+
+图表比的是数字。**图**画的是形状：谁和谁相连、中心周围有什么、一份画像如何分布、层次怎么叠。你写词和数，模板负责画。
+
+````markdown
+```figure dataflow hub="网关" sink="每个站点"
+source: X / Twitter
+source: YouTube 字幕
+lane: 新词 | 采集 | 去重 | 打分
+lane: 站点运维 | 搜索 | 快照 | 账本
+state: pushed.json | sites.csv
+```
+````
+
+- 第一个词是模板：`dataflow`（来源汇入中心，几条泳道上的阶段，再汇到出口）、`orbit`（两圈环上的卫星围绕中心）、`radar`（最多 3 条序列、3 到 8 个轴）、`stack`（2 到 5 层，每层若干小块）。
+- 每行是 `角色: 字段`，字段之间用 `|` 隔开。`dataflow` 读 `source:`（一行一个名字）、`lane:`（名字，然后是它的阶段）和 `state:`（跑完留下的文件）；`orbit` 读 `ring1:` 和 `ring2:`；`radar` 读 `series:`（名字，然后是每个轴一个 0–100 的数）；`stack` 读 `layer:`（名字，然后是它的块）。
+- 设置写在围栏里、模板后面，形如 `key="value"`。`dataflow` 必须有 `hub=` 和 `sink=`，`orbit` 必须有 `center=`，`radar` 必须有 `axes="a, b, c"`。`hub-note=`、`center-note=`、`note=` 补一行小字，`stack` 的 `note=` 是图下面的一行注。
+- 图自己会动，不用多写一个字：光沿每条边跑，到达的节点长出一圈脉冲，页面打开时边自己画出来。快慢由页面的 `motion:` 决定：`subtle`、`expressive` 或 `off`。
+- `motion: off` 去掉的是动，不是图。静止的页面就是打印出来的页面：存成 PDF、打印、以及系统要求减少动态效果时，看到的是同一张完整的图。没有图也没有图表的页面不会带上这两份样式。
+- 上限：`dataflow` 8 个来源、4 条泳道、6 个文件；`orbit` 内圈 4 个、外圈 6 个卫星；`radar` 3 条序列、8 个轴；`stack` 5 层、每层 6 个块。超过的行会被丢掉，并给出一条说明这些行的提醒。
+- 从右往左的页面会镜像整张图，文字始终留在对应节点的下方。
+- 模板不认识的 `角色:`、没有阶段的泳道、超过 100 的值、以及缺少 `hub=`、`sink=`、`center=` 或 `axes=`，都是带行号的错误。
+
+完整写法：`am help figure`。
 
 ## 不经过 Agent，直接用命令行
 
@@ -434,6 +460,7 @@ am serve --tailscale  # 只监听 Tailscale 地址；tailnet 内的任何设备�
 | `theme` | `auto` | 默认主题：`auto`（长文用 paper，有图表用 blueprint）、`blueprint`、`shadcn`、`paper`，或你自己的主题 |
 | `mode` | `auto` | 默认明暗：`auto`、`light` 或 `dark` |
 | `style` | `80` | 写作检查：`off`、`80`（只提醒）或 `strict`（不达标不生成） |
+| `motion` | `subtle` | 图和图表的动态：`off`、`subtle` 或 `expressive`（约快五分之一）。没有图的页面不受影响 |
 | `scale` | `1` | 页面文字大小：0.8–1.5，步长 0.05。1.2 表示放大 20%；图表跟着变大。工具栏的 A− / A+ 也能调整；选择会记在这个浏览器里，并优先于这个设置，但在 `am serve` 下只在当前标签页内有效 |
 | `update_check` | `on` | 每天向 GitHub 查一次新版本并提醒你，不会自己更新 |
 | `close_after_reply` | `off` | 复制回复后 3 秒关闭页面标签页，带倒计时和「保持打开」按钮。见下方说明 |

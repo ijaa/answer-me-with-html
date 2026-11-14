@@ -38,6 +38,7 @@ export const CHOICES = Object.freeze({
   style: ['off', '80', 'strict'],
   mode: ['auto', 'light', 'dark'],
   outline: ['left', 'right'],
+  motion: ['off', 'subtle', 'expressive'],
 });
 
 // Command-line arguments override draft and config settings: validates values, returns a new meta without changing the original. Keys with undefined values are ignored.
@@ -62,6 +63,7 @@ const DEFAULT_META = Object.freeze({
   outline: 'right',
   cols: 3,
   title: '',
+  motion: 'subtle',
 });
 
 const FENCE_OPEN = /^(`{3,}|~{3,})\s*([^\s`]*)\s*(.*)$/;

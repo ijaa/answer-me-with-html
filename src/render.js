@@ -281,6 +281,9 @@ export const hasDelta = (html) => html.includes('class="am-delta-bar"');
 
 // A chart (src/components/chart.js) needs its own styles, as a formula needs the math ones.
 export const hasChart = (html) => html.includes('class="am-diagram am-chart"');
+// A figure is a drawing with motion; a page carries figure.css only when it has one, and motion.css only when it has any drawing
+// and the page moves.
+export const hasFigure = (html) => html.includes('class="am-diagram am-fx"');
 
 function lightboxShell(ui, hasDiagrams) {
   if (!hasDiagrams) return '';
@@ -315,11 +318,14 @@ function scaleButtons(ui) {
 }
 
 function shell({ meta, language, body, source, embedded, update, closeAfter, colophon, scale }) {
+  const motion = meta.motion ?? 'subtle';
   const { ui, labelKey } = language;
   const notice = updateNotice(ui, update, labelKey);
   const pick = (name, label, values, current) => `<label class="am-pick">${esc(label)}<select data-am="${name}">${values
     .map(([value, text]) => `<option value="${esc(value)}"${value === current ? ' selected' : ''}>${esc(text)}</option>`).join('')}</select></label>`;
-  const root = { lang: language.htmlLang, dir: language.dir, theme: meta.theme, mode: meta.mode, style: meta.style, scale };
+  // motion: what the page was made with. A page without a drawing keeps the attribute (so a patch and a host agree) but carries no
+  // stylesheet for it: the key describes the page, the stylesheets follow the drawing.
+  const root = { lang: language.htmlLang, dir: language.dir, theme: meta.theme, mode: meta.mode, style: meta.style, scale, motion: meta.motion };
   // The one inline script, as the browser reads it: the policy pins a hash of exactly this text.
   const interactiveTable = body.includes('<table data-am-table=');
   const script = `\n${RUNTIME_JS}${interactiveTable ? TABLE_JS : ''}${hasDelta(body) ? DELTA_JS : ''}${update ? UPDATE_JS : ''}${closeAfter ? CLOSE_AFTER_JS : ''}`;
@@ -332,7 +338,7 @@ ${cspMeta([script], { live: true })}
 <meta name="generator" content="Answer me with HTML ${VERSION}">
 <title>${esc(meta.title || 'Answer me with HTML')}</title>
 <style>
-${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), table: interactiveTable, update: Boolean(update), closeAfter, scale })}
+${pageCss(embedded, { diff: body.includes('class="am-codeblock am-codeblock--diff"'), delta: hasDelta(body), rtl: language.dir === 'rtl', math: hasMath(body), chart: hasChart(body), figure: hasFigure(body), motion: motion !== 'off' && (hasFigure(body) || hasChart(body)), table: interactiveTable, update: Boolean(update), closeAfter, scale })}
 </style>
 </head>
 <body>

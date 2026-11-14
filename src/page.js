@@ -11,14 +11,14 @@ const AUDIO_OPEN = '<audio id="amv-audio"';
 // a left-to-right page keeps the root tag it always had.
 // voice is written only on voiced video pages (elevenlabs / local / system / audio-map); patch keeps the same voice.
 // scale is the reader's text size (src/themes/type-scale.js); 1 is the default, so the tag carries it only when it differs.
-export function rootTag({ lang, dir, theme, mode, style, scale = 1, voice, video = false }) {
-  return `<html lang="${lang}"${dirAttr(dir)} data-theme="${esc(theme)}" data-mode="${esc(mode)}" data-style="${esc(style)}"${scale === 1 ? '' : ` data-scale="${scale}"`}${voice ? ` data-voice="${esc(voice)}"` : ''}${video ? ' data-video' : ''}>`;
+export function rootTag({ lang, dir, theme, mode, style, scale = 1, voice, video = false, motion }) {
+  return `<html lang="${lang}"${dirAttr(dir)} data-theme="${esc(theme)}" data-mode="${esc(mode)}" data-style="${esc(style)}"${motion ? ` data-motion="${esc(motion)}"` : ''}${scale === 1 ? '' : ` data-scale="${scale}"`}${voice ? ` data-voice="${esc(voice)}"` : ''}${video ? ' data-video' : ''}>`;
 }
 
 // Copies of the root settings, written on the toolbar. A host that serves the page inside its own document leaves the real <html>
 // without them; the page runtime sets back whatever the root lacks from these (see the first statement of src/runtime/page.js).
-export function rootCarrierAttrs({ lang, dir, theme, mode, style }) {
-  return ` data-am-root-lang="${lang}"${dir === 'rtl' ? ' data-am-root-dir="rtl"' : ''} data-am-root-theme="${esc(theme)}" data-am-root-mode="${esc(mode)}" data-am-root-style="${esc(style)}"`;
+export function rootCarrierAttrs({ lang, dir, theme, mode, style, motion }) {
+  return ` data-am-root-lang="${lang}"${dir === 'rtl' ? ' data-am-root-dir="rtl"' : ''} data-am-root-theme="${esc(theme)}" data-am-root-mode="${esc(mode)}" data-am-root-style="${esc(style)}"${motion ? ` data-am-root-motion="${esc(motion)}"` : ''}`;
 }
 
 const dirAttr = (dir) => (dir === 'rtl' ? ' dir="rtl"' : '');
@@ -52,6 +52,7 @@ export function readPage(html) {
     theme: attr('data-theme'),
     mode: attr('data-mode'),
     style: attr('data-style'),
+    motion: attr('data-motion'),
     scale: readScale(attr('data-scale')),
     lang: attr('lang'),
     voice: attr('data-voice'),
