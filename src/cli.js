@@ -40,7 +40,7 @@ const USAGE = `Answer me with HTML ${VERSION} — renders a Markdown draft into 
 
 Usage:
   am render <file|->  [-o <file>] [--replace <page>] [--no-open] [--theme ${['auto', ...themeNames('page')].join('|')}]
-                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark]
+                      [--template sheet|doc] [--style off|80|strict] [--mode auto|light|dark] [--motion off|subtle|expressive]
   am patch  <html> --panel <title> [file|-] [--from file] [--theme …] [--no-open]
                                                   replace one ## panel of an existing page and overwrite that HTML in place
   am video  <file|->  [-o <file>] [--voice auto|elevenlabs|local|system|off | --audio-map <file.json>]
@@ -76,6 +76,7 @@ file: tcp-handshake    # optional: the file name, ASCII letters and digits; use 
 cols: 3                # number of sheet grid columns, default 3
 style: 80              # STE check strictness: off | 80 (default, warn only) | strict (no page if it fails)
 mode: auto             # auto follows the system | light | dark
+motion: subtle         # animate the figures and charts: off (still) | subtle (default) | expressive (faster)
 source: asd-ste100.org # any other key shows in the page header meta line
 ---
 Intro (optional, shown below the title)
@@ -236,6 +237,7 @@ export async function main(argv, io = {}) {
         template: { type: 'string' },
         style: { type: 'string' },
         mode: { type: 'string' },
+        motion: { type: 'string' },
         voice: { type: 'string' },
         'audio-map': { type: 'string' },
         mp4: { type: 'boolean' },
@@ -341,11 +343,11 @@ async function cmdRender(src, opts, ctx, baseDir, from) {
     return 2;
   }
   const config = loadConfig(ctx);
-  const { theme, mode, style } = config.values;
+  const { theme, mode, style, motion } = config.values;
   await loadMath(src);
   let result;
   try {
-    result = renderDoc(src, { theme: opts.theme, template: opts.template, style: opts.style, mode: opts.mode }, { theme, mode, style }, { themes: ctx.themes, baseDir, codeDir: ctx.io.cwd ?? process.cwd(), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: config.values.scale });
+    result = renderDoc(src, { theme: opts.theme, template: opts.template, style: opts.style, mode: opts.mode, motion: opts.motion }, { theme, mode, style, motion }, { themes: ctx.themes, baseDir, codeDir: ctx.io.cwd ?? process.cwd(), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: config.values.scale });
   } catch (e) {
     return reportDraftError(e, src, from, ctx);
   }
@@ -595,14 +597,15 @@ async function cmdPatch(htmlArg, fromArg, opts, ctx) {
     return 1;
   }
   const config = loadConfig(ctx);
-  const { theme, mode, style } = config.values;
-  // Keep the original page's template, theme, mode and STE strictness (it may have been made with --theme / --style etc.); this command's arguments win.
+  const { theme, mode, style, motion } = config.values;
+  // Keep the original page's template, theme, mode, motion and STE strictness (it may have been made with --theme / --style etc.); this command's arguments win.
   // Video pages must go through renderVideo, not renderDoc.
   const overrides = {
     template: video ? undefined : (opts.template ?? page.template),
     theme: opts.theme ?? page.theme,
     mode: opts.mode ?? page.mode,
     style: opts.style ?? page.style,
+    motion: video ? undefined : (opts.motion ?? page.motion),
   };
   if (!video) await loadMath(patched);
   let result;
@@ -620,7 +623,7 @@ async function cmdPatch(htmlArg, fromArg, opts, ctx) {
       // Video pages also keep the original page's theme, mode and STE strictness (e.g. 3b1b / --style off); this command's arguments win.
       result = await buildVideo(patched, voice, { ...opts, theme: overrides.theme, mode: overrides.mode, style: overrides.style, previousLanguage: page.lang }, config, ctx);
     } else {
-      result = renderDoc(patched, overrides, { theme, mode, style }, { themes: ctx.themes, previousLanguage: page.lang, baseDir: cwd, codeDir: cwd, knownImages: readEmbeddedImages(html), knownCode: readEmbeddedCode(html), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: page.scale });
+      result = renderDoc(patched, overrides, { theme, mode, style, motion }, { themes: ctx.themes, previousLanguage: page.lang, baseDir: cwd, codeDir: cwd, knownImages: readEmbeddedImages(html), knownCode: readEmbeddedCode(html), update: updateFor(config, ctx), closeAfter: config.values.close_after_reply, colophon: config.values.colophon, scale: page.scale });
     }
   } catch (e) {
     if (e instanceof TtsError) {

@@ -13,6 +13,7 @@ subtitle: One line
 file: tcp-handshake    # the file name, when the title has few or no ASCII letters (see Output)
 cols: 3                # columns for sheet (a whole number)
 outline: right         # doc with 3 or more sections: the side of the outline rail, left or right (default right)
+motion: subtle         # figures and charts: off (still) | subtle (default) | expressive (faster)
 source: RFC 9293       # any other field shows under the title
 ---
 A sentence or two with the main point.
@@ -219,6 +220,32 @@ Postgres    | 28  | 95
 - A line that has the wrong number of cells, a value that is not a number, a negative or all-zero pie, and a table over the limits are errors with the line number and a correct example.
 
 Full syntax: `am help chart`.
+
+## Figures
+
+A chart compares numbers. A figure draws a shape: how parts connect, what sits around a center, how a profile reads, how layers stack. Write the words and the numbers; the template writes the drawing.
+
+````markdown
+```figure dataflow hub="Gateway" sink="Every site"
+source: X / Twitter
+source: YouTube captions
+lane: New words | Collect | Dedup | Score
+lane: Site ops | Search | Snapshot | Ledger
+state: pushed.json | sites.csv
+```
+````
+
+- The first word is the template: `dataflow` (sources into a hub, lanes of stages, then an aggregate), `orbit` (satellites on two rings around a center), `radar` (up to 3 series over 3 to 8 axes), `stack` (2 to 5 layers of chips), `gauge` (up to 4 numbers against a scale, with an ok / warn / bad zone), `matrix` (up to 10 rows by 6 columns of numbers), `sankey` (flows whose width is the amount), `quadrant` (up to 10 options on two axes).
+- The word can be left out: no two templates read the same role, so the roles name the template (`figure` with `source:` lines is a dataflow, with `flow:` lines a sankey). `figure auto` says the same thing out loud. Lines from two templates in one body are an error that names both.
+- Each line is `role: fields`, with `|` between the fields. `dataflow` reads `source:` (one name on each line), `lane:` (a name, then its stages) and `state:` (files the run leaves behind); `orbit` reads `ring1:` and `ring2:`; `radar` reads `series:` (a name, then one value from 0 to 100 for each axis); `stack` reads `layer:` (a name, then its chips); `gauge` reads `gauge:` (a name, the value, the top of the scale); `matrix` reads `col:` (one name each) and `row:` (a name, then one 0 to 100 value per column); `sankey` reads `flow:` (from, to, amount); `quadrant` reads `item:` (a name, then x and y from 0 to 100).
+- Settings go in the fence as `key="value"` after the template. `dataflow` needs `hub=` and `sink=`, `orbit` needs `center=`, `radar` needs `axes="a, b, c"`, `quadrant` needs `x="low → high"` and `y="low → high"`. `hub-note=`, `center-note=` and `note=` add a small second line, and a `note=` is one line under the drawing; `gauge` takes `unit=` and `zones="80, 150"`, `sankey` takes `unit=`.
+- A figure moves without a word of its own. A light runs along every edge, a ring grows out of the node it reaches, and the edges draw themselves in when the page opens. The page's `motion:` decides how fast: `subtle`, `expressive`, or `off`.
+- `motion: off` removes the movement, not the drawing. The still page is the printed page, so a page saved as PDF, a printed page, and a reader who asks the system for less motion all show the same complete picture. A page with no figure and no chart carries neither stylesheet.
+- Limits: `dataflow` 8 sources, 4 lanes and 6 files; `orbit` 4 inner and 6 outer satellites; `radar` 3 series and 8 axes; `stack` 5 layers and 6 chips in a layer; `gauge` 4 numbers; `matrix` 10 rows and 6 columns; `sankey` 10 flows across 4 columns; `quadrant` 10 options. Over a limit the last lines are dropped, with a warning that names them.
+- A right-to-left page mirrors the drawing and keeps every label under its node.
+- A role that the template does not read, a lane with no stages, a value over 100, a row with the wrong number of values, a sankey flow that loops back, and a missing `hub=`, `sink=`, `center=`, `axes=`, `x=` or `y=` are errors with the line number.
+
+Full syntax: `am help figure`.
 
 ## Use the CLI directly, without an agent
 
@@ -434,6 +461,7 @@ am serve --tailscale  # listen on your Tailscale address only; open the links fr
 | `theme` | `auto` | Default theme: `auto` (paper for long text, blueprint for diagrams), `blueprint`, `shadcn`, `paper`, or your own theme |
 | `mode` | `auto` | Default color mode: `auto`, `light` or `dark` |
 | `style` | `80` | Writing check: `off`, `80` (warn only) or `strict` (refuse to render) |
+| `motion` | `subtle` | Movement in figures and charts: `off`, `subtle` or `expressive` (about a fifth faster). A page with no drawing is not affected |
 | `scale` | `1` | Text size on the page: 0.8–1.5 in steps of 0.05. 1.2 makes text 20% larger; diagrams and charts grow with it. The toolbar's A− / A+ buttons change it too; the choice is remembered in this browser and wins over this setting, but under `am serve` it lasts for the tab only |
 | `update_check` | `on` | Check GitHub for a new version once a day and mention it. Never updates by itself |
 | `close_after_reply` | `off` | Close the page tab 3 seconds after you copy the reply, with a countdown and a Keep open button. See the note below |

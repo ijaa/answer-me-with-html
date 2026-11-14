@@ -33,7 +33,7 @@ print("<x>")
 test('render: outputs a complete single-file HTML with theme attributes and viewport', () => {
   const { html, meta } = renderDoc(SRC);
   assert.match(html, /^<!doctype html>/);
-  assert.match(html, /<html lang="zh-CN" data-theme="blueprint" data-mode="auto" data-style="80">/);
+  assert.match(html, /<html lang="zh-CN" data-theme="blueprint" data-mode="auto" data-style="80" data-motion="subtle">/);
   assert.match(html, /name="viewport"/);
   assert.equal(meta.template, 'sheet');
 });

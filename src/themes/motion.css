@@ -1,0 +1,154 @@
+/* Page motion: the animation rules for figures and charts. This file is only in the page when the page has a drawing and
+   motion is not off, so a still page carries none of it. Every rule is under html[data-motion], print and a reader who asks for
+   reduced motion cancel all of them, and nothing here changes the drawing when it is off: the static picture is the final state.
+
+   The one variable that separates the two levels is --am-fx-phase: subtle is 1, expressive is 0.82. Both the duration and the
+   delay of every primitive are scaled by it, so the two levels cannot drift out of step. */
+
+html:is([data-motion="subtle"], [data-motion="expressive"]) { --am-fx-phase: 1; }
+html[data-motion="expressive"] { --am-fx-phase: 0.82; }
+
+/* ── a light tail runs along its edge ──
+   pathLength="1" on the path makes the dash a fraction of the path, so one keyframe serves every edge; the per-edge numbers
+   arrive as custom properties on the element (src/svg/anim.js), which is also why a 20 unit channel and a 900 unit lane read as
+   the same speed. */
+@keyframes am-fx-travel {
+  from { stroke-dashoffset: var(--am-fx-from, 0.1); }
+  to { stroke-dashoffset: var(--am-fx-to, -2.1); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-comet {
+  opacity: 1;
+  stroke-dasharray: var(--am-fx-dash, 0.1 2);
+  animation-name: am-fx-travel;
+  animation-duration: calc(var(--am-fx-time, 3s) * var(--am-fx-phase, 1));
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ── a pulse ring grows out of the node the light reached, one ring per period ── */
+@keyframes am-fx-pulse {
+  0% { opacity: 0; transform: scale(1); }
+  4% { opacity: 0.7; }
+  26% { opacity: 0; transform: scale(var(--am-fx-grow, 1.5)); }
+  100% { opacity: 0; transform: scale(var(--am-fx-grow, 1.5)); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-pulse {
+  animation-name: am-fx-pulse;
+  animation-duration: calc(var(--am-fx-period, 4.8s) * var(--am-fx-phase, 1));
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  animation-iteration-count: infinite;
+}
+
+/* ── a flash where the light stops ── */
+@keyframes am-fx-flash {
+  0% { opacity: 0; }
+  5% { opacity: 1; }
+  22% { opacity: 0; }
+  100% { opacity: 0; }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-flash {
+  animation-name: am-fx-flash;
+  animation-duration: calc(var(--am-fx-period, 4.8s) * var(--am-fx-phase, 1));
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ── an edge that draws itself in, once, when the page opens ──
+   Two dashes, one of them longer than the path: offset 1.2 hides the line, 0 shows all of it. The dash stays as it is after the
+   animation, so the final state is the plain static edge. */
+@keyframes am-fx-draw {
+  from { stroke-dashoffset: 1.2; }
+  to { stroke-dashoffset: 0; }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-draw {
+  stroke-dasharray: 1 2;
+  animation: am-fx-draw calc(0.55s * var(--am-fx-phase, 1)) cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
+/* ── a gauge fills to its number, once ──
+   The bar is drawn at its final width and the animation scales it from nothing, so a still page shows the value without a length
+   written into a keyframe. transform-origin comes from figure.css, left or right, so the fill grows from the axis on either side. */
+@keyframes am-fx-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-fill {
+  animation: am-fx-grow calc(0.9s * var(--am-fx-phase, 1)) cubic-bezier(0.3, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
+/* ── a matrix arrives along its diagonal: the delay per cell is (row + column) × 60 ms, which reads as top left first ── */
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-cell {
+  animation: am-fx-in calc(0.45s * var(--am-fx-phase, 1)) linear both;
+  animation-delay: calc(var(--am-fx-delay, 0s) * var(--am-fx-phase, 1));
+}
+
+/* ── a ring or a sweep that turns about a point the template wrote in drawing units ── */
+@keyframes am-fx-spin {
+  to { transform: rotate(360deg); }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-fx .am-fx-spin {
+  animation: am-fx-spin calc(var(--am-fx-period, 26s) * var(--am-fx-phase, 1)) linear infinite;
+}
+
+/* ── charts: the drawing arrives as one ──
+   A chart has no per-element hooks and gets none: its rows, dots and slices are placed by code that the video mode also drives,
+   and a markup change for a delay is a cost every reader pays. One rule, one element.
+   Opacity only, never a transform: the page runtime measures every panel to fill its rows, and a chart that is 8px lower for half
+   a second is a chart that measures wrong. */
+@keyframes am-fx-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+html:is([data-motion="subtle"], [data-motion="expressive"]) .am-chart {
+  animation: am-fx-in calc(0.4s * var(--am-fx-phase, 1)) linear both;
+}
+
+/* ── the gates: print keeps the drawing and drops the moving parts ──
+   A light tail and a pulse ring carry meaning only while they move; on paper they are stray marks, so they are removed rather
+   than frozen. Everything else stays, at its final state. */
+@media print {
+  .am-fx .am-fx-comet,
+  .am-fx .am-fx-pulse,
+  .am-fx .am-fx-flash { display: none !important; }
+  .am-fx .am-fx-comet,
+  .am-fx .am-fx-pulse,
+  .am-fx .am-fx-flash,
+  .am-fx .am-fx-draw,
+  .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
+  .am-chart { animation: none !important; }
+}
+
+/* A reader who asks the system for less motion gets exactly the printed page: the picture, without the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .am-fx .am-fx-comet,
+  .am-fx .am-fx-pulse,
+  .am-fx .am-fx-flash { display: none !important; }
+  .am-fx .am-fx-comet,
+  .am-fx .am-fx-pulse,
+  .am-fx .am-fx-flash,
+  .am-fx .am-fx-draw,
+  .am-fx .am-fx-spin,
+  .am-fx .am-fx-fill,
+  .am-fx .am-fx-cell,
+  .am-chart { animation: none !important; }
+}
+
+/* A video page runs on its own clock: the player's timeline must be the only thing that moves. */
+html[data-video] .am-fx .am-fx-comet,
+html[data-video] .am-fx .am-fx-pulse,
+html[data-video] .am-fx .am-fx-flash { display: none !important; }
+html[data-video] .am-fx .am-fx-comet,
+html[data-video] .am-fx .am-fx-pulse,
+html[data-video] .am-fx .am-fx-flash,
+html[data-video] .am-fx .am-fx-draw,
+html[data-video] .am-fx .am-fx-spin,
+html[data-video] .am-fx .am-fx-fill,
+html[data-video] .am-fx .am-fx-cell,
+html[data-video] .am-chart { animation: none !important; }

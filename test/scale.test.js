@@ -48,7 +48,7 @@ test('scale: scale 1 is the default and leaves the page byte-identical', () => {
 test('scale: the root carries data-scale only when it is not 1, and readPage reads it back', () => {
   const source = '## A\nText.\n';
   const scaled = renderDoc(source, {}, {}, { scale: 1.25 }).html;
-  assert.match(scaled, /<html lang="en" data-theme="[^"]+" data-mode="auto" data-style="80" data-scale="1\.25">/);
+  assert.match(scaled, /<html lang="en" data-theme="[^"]+" data-mode="auto" data-style="80" data-motion="subtle" data-scale="1\.25">/);
   assert.equal(readPage(scaled).scale, 1.25);
   const plain = renderDoc(source).html;
   assert.doesNotMatch(plain, /data-scale=/);

@@ -1,0 +1,94 @@
+/* Figure styles: the static picture. Nothing here moves — src/themes/motion.css adds the animation, and it is only in the page
+   when the page moves. Every color is a token with a fallback, so a theme that sets the diagram tokens changes a figure, and a
+   theme that sets none still gets a readable drawing. */
+
+.am-fx {
+  --am-fx-1: var(--accent, #1d5fbf);
+  --am-fx-2: var(--series-1, #0e8f63);
+  --am-fx-3: var(--series-2, #0a76b8);
+  --am-fx-4: var(--series-3, #b4660a);
+  --am-fx-halo: 0.12;
+  --am-fx-sweep: 0.22;
+  --am-fx-hair: var(--line-2, #d9dde4);
+  background: transparent;
+}
+
+/* ── series: one indirection, so a comet, a pulse and a polygon of the same series cannot drift apart ── */
+.am-fx .am-fx-s1 { --am-fx-this: var(--am-fx-1); }
+.am-fx .am-fx-s2 { --am-fx-this: var(--am-fx-2); }
+.am-fx .am-fx-s3 { --am-fx-this: var(--am-fx-3); }
+.am-fx .am-fx-s4 { --am-fx-this: var(--am-fx-4); }
+
+/* ── the ground ── */
+.am-fx .am-fx-dots { opacity: 0.45; }
+.am-fx .am-fx-dot { fill: var(--am-fx-hair); }
+.am-fx .am-fx-halo-a { stop-color: var(--am-fx-1); stop-opacity: var(--am-fx-halo); }
+.am-fx .am-fx-halo-b { stop-color: var(--am-fx-1); stop-opacity: 0; }
+.am-fx .am-fx-sweep-a { stop-color: var(--am-fx-3); stop-opacity: var(--am-fx-sweep); }
+.am-fx .am-fx-sweep-b { stop-color: var(--am-fx-3); stop-opacity: 0; }
+
+/* ── edges and tracks ── */
+.am-fx .am-fx-edge { fill: none; stroke: var(--am-fx-hair); stroke-width: 1.2; }
+.am-fx .am-fx-edge--dim { stroke: var(--am-fx-hair); opacity: 0.8; }
+.am-fx .am-fx-track { fill: var(--am-fx-hair); }
+.am-fx .am-fx-axis { stroke: var(--am-fx-hair); stroke-dasharray: 2 4; }
+.am-fx .am-fx-src,
+.am-fx .am-fx-port { fill: var(--ink-3, #8b929e); }
+
+/* ── nodes ── */
+.am-fx .am-fx-node-bg { fill: var(--paper, #fff); stroke: var(--line, #1d2026); stroke-width: var(--bw, 1.5px); }
+.am-fx .am-fx-node-bg--bg { fill: var(--bg, #f6f6f3); }
+.am-fx .am-fx-node-bg--ink { fill: var(--ink, #16181d); stroke: var(--ink, #16181d); }
+.am-fx .am-fx-node-in { fill: none; stroke: var(--line-2, #d6dae1); stroke-dasharray: 2 6; }
+.am-fx .am-fx-stage { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.4; }
+.am-fx .am-fx-band { fill: var(--paper, #fff); stroke: var(--line-2, #d6dae1); stroke-width: 1.2; }
+.am-fx .am-fx-chip { fill: var(--fill, #f3f5f8); stroke: var(--line-2, #d6dae1); stroke-width: 1; }
+.am-fx .am-fx-ring { fill: none; stroke: var(--am-fx-hair); }
+.am-fx .am-fx-ring--dim { stroke-dasharray: 2 6; opacity: 0.75; }
+
+/* ── a profile (radar) ── */
+.am-fx .am-fx-area { stroke: var(--am-fx-this, var(--am-fx-1)); fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.12; stroke-width: 1.8; stroke-linejoin: round; }
+.am-fx .am-fx-vertex { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }
+.am-fx .am-fx-swatch { fill: var(--am-fx-this, var(--am-fx-1)); stroke: none; }
+.am-fx .am-fx-sweep-line { stroke: var(--am-fx-3); stroke-width: 1; opacity: 0.6; }
+.am-fx .am-fx-hub { fill: var(--am-fx-3); }
+
+/* ── a gauge: a track, the zones that qualify it, the fill that reaches the number, and a needle on the exact value ── */
+.am-fx .am-fx-zone--ok { fill: var(--ok, #10844f); fill-opacity: 0.16; }
+.am-fx .am-fx-zone--warn { fill: var(--warn, #a8620a); fill-opacity: 0.2; }
+.am-fx .am-fx-zone--err { fill: var(--err, #c8392b); fill-opacity: 0.14; }
+.am-fx .am-fx-fill { fill: var(--am-fx-1); transform-box: fill-box; transform-origin: left center; }
+.am-fx .am-fx-fill--rev { transform-origin: right center; }
+.am-fx .am-fx-needle { stroke: var(--ink, #16181d); stroke-width: 1.6; stroke-linecap: round; }
+
+/* ── a matrix: the wash is the value, so it is an attribute of the cell and the color is still a token ── */
+.am-fx .am-fx-cell { fill: var(--am-fx-1); }
+.am-fx .am-fx-cell-on { font-size: 12px; fill: var(--bg, #f6f6f3); }
+.am-fx .am-fx-cell-off { font-size: 12px; fill: var(--ink, #16181d); }
+
+/* ── a sankey: a band is a flow, a bar is its end in a column ── */
+.am-fx .am-fx-band-link { fill: var(--am-fx-this, var(--am-fx-1)); fill-opacity: 0.22; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-opacity: 0.3; stroke-width: 1; }
+.am-fx .am-fx-bar { fill: var(--ink, #16181d); }
+
+/* ── a quadrant: a point, and the head of an axis ── */
+.am-fx .am-fx-pt { fill: var(--am-fx-this, var(--am-fx-1)); stroke: var(--paper, #fff); stroke-width: 1.5; }
+.am-fx .am-fx-arrow { fill: var(--am-fx-hair); }
+
+/* ── text: a size and a color for each role, overriding the diagram defaults ── */
+.am-fx .am-fx-name { font-size: 12.5px; fill: var(--ink, #16181d); }
+.am-fx .am-fx-row { font-size: 13.5px; fill: var(--ink, #16181d); }
+.am-fx .am-fx-node { font-size: 15px; fill: var(--ink, #16181d); }
+.am-fx .am-fx-node-inv { font-size: 15px; fill: var(--bg, #f6f6f3); }
+.am-fx .am-fx-sub { font-size: 11px; fill: var(--ink-3, #8b929e); }
+.am-fx .am-fx-chip-name { font-size: 11.5px; fill: var(--ink-2, #4b5260); }
+.am-fx .am-fx-axis-name { font-size: 12px; fill: var(--ink-2, #4b5260); }
+.am-fx .am-fx-legend { font-size: 11.5px; fill: var(--ink-2, #4b5260); }
+.am-fx .am-fx-bold { font-weight: 600; }
+.am-fx .am-fx-mono { font-family: var(--font-mono, monospace); }
+
+/* ── motion is off until motion.css says otherwise: a light tail with no animation is a stray mark, a pulse ring with no
+   animation is a second circle around every node, so both start hidden and the stylesheet that animates them shows them ── */
+.am-fx .am-fx-comet { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); stroke-linecap: round; opacity: 0; }
+.am-fx .am-fx-pulse { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.am-fx .am-fx-pulse circle { fill: none; stroke: var(--am-fx-this, var(--am-fx-1)); }
+.am-fx .am-fx-flash { fill: var(--am-fx-this, var(--am-fx-1)); opacity: 0; }
